@@ -8,7 +8,8 @@ import Register.RegisterForm;
 import User.UserDash;
 import config.config;
 import javax.swing.JOptionPane;
-
+import Session.Session;
+import session.UserData;
 
 
 public class LoginForm extends javax.swing.JFrame {
@@ -104,63 +105,71 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_signupMouseClicked
 
     private void signinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinMouseClicked
-            // Get input values
-        String userEmail = email.getText().trim();
-        String userPassword = passwordfield.getText().trim();
+           // Get input values
+    String userEmail = email.getText().trim();
+    String userPassword = passwordfield.getText().trim();
+    
+    // Validation
+    if (userEmail.isEmpty() || userPassword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, 
+            "Please enter both email and password!", 
+            "Login Error", 
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // Get full user data
+    config conf = new config();
+    UserData userData = conf.getUserData(userEmail, userPassword);
+    
+    if (userData != null) {
+        // CREATE SESSION
+        Session session = Session.getInstance();
+        session.login(
+            userData.getId(),
+            userData.getUsername(),
+            userData.getFirstname(),
+            userData.getLastname(),
+            userData.getEmail(),
+            userData.getType()
+        );
         
-        // Validation: Check if fields are empty
-        if (userEmail.isEmpty() || userPassword.isEmpty()) {
+        // Debug output
+        System.out.println("\n========================================");
+        System.out.println("LOGIN SUCCESSFUL!");
+        System.out.println("========================================");
+        session.printSessionInfo();
+        
+        // Redirect based on type
+        if ("Admin".equalsIgnoreCase(userData.getType())) {
             JOptionPane.showMessageDialog(this, 
-                "Please enter both email and password!", 
-                "Login Error", 
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Authenticate user using config class
-        config conf = new config();
-        String sql = "SELECT type FROM tbl_users WHERE email = ? AND password = ?";
-        String userType = conf.authenticate(sql, userEmail, userPassword);
-        
-        // Check authentication result
-        if (userType != null) {
-            // Get the username from database
-            String sqlGetUsername = "SELECT username FROM tbl_users WHERE email = ? AND password = ?";
-            String username = conf.getUsername(sqlGetUsername, userEmail, userPassword);
-            
-            // Login successful - redirect based on user type
-            if ("Admin".equalsIgnoreCase(userType)) {
-                // Redirect to Admin Dashboard with username
-                JOptionPane.showMessageDialog(this, 
-                    "Welcome " + username + "!", 
-                    "Login Successful", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                AdminDash ad = new AdminDash(username); // Pass username
-                ad.setVisible(true);
-                this.dispose();
-            } else if ("User".equalsIgnoreCase(userType)) {
-                // Redirect to User Dashboard with username
-                JOptionPane.showMessageDialog(this, 
-                    "Welcome " + username + "!", 
-                    "Login Successful", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                UserDash ud = new UserDash(username); // Pass username
-                ud.setVisible(true);
-                this.dispose();
-            } else {
-                // Unknown user type
-                JOptionPane.showMessageDialog(this, 
-                    "Unknown user type: " + userType, 
-                    "Login Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
+                "Welcome " + userData.getFirstname() + " " + userData.getLastname() + "!", 
+                "Login Successful", 
+                JOptionPane.INFORMATION_MESSAGE);
+            AdminDash ad = new AdminDash(userData.getUsername());
+            ad.setVisible(true);
+            this.dispose();
+        } else if ("User".equalsIgnoreCase(userData.getType())) {
+            JOptionPane.showMessageDialog(this, 
+                "Welcome " + userData.getFirstname() + " " + userData.getLastname() + "!", 
+                "Login Successful", 
+                JOptionPane.INFORMATION_MESSAGE);
+            UserDash ud = new UserDash(userData.getUsername());
+            ud.setVisible(true);
+            this.dispose();
         } else {
-            // Login failed
             JOptionPane.showMessageDialog(this, 
-                "Invalid email or password!\n\nPlease check your credentials and try again.", 
-                "Login Failed", 
+                "Unknown user type: " + userData.getType(), 
+                "Login Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
+    } else {
+        JOptionPane.showMessageDialog(this, 
+            "Invalid email or password!", 
+            "Login Failed", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+
     }//GEN-LAST:event_signinMouseClicked
 
     /**

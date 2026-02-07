@@ -7,44 +7,40 @@ package Admin;
 
 import Login.LoginForm;
 import Session.Session;
+
 /**
  *
- * @author ashlaran
+ * @author USER31
  */
-public class AdminDash extends javax.swing.JFrame {
-    
-  private String loggedInUsername;
-    /**
-     * Creates new form AdminDash
-     */
-    public AdminDash() {
-        initComponents();
-         this.loggedInUsername = "Admin"; // Default
-           loadSessionInfo();
-    }
+public class ACCOUNT extends javax.swing.JFrame {
 
     /**
-     * Constructor with username parameter
+     * Creates new form ACCOUNT
      */
-    public AdminDash(String username) {
+    public ACCOUNT() {
         initComponents();
-        this.loggedInUsername = username;
-        lblUsername.setText("Welcome, " + username + "!"); // Display username
-          loadSessionInfo();
+         loadUserAccountInfo();
     }
-    
-    /**
- * Load and display session information
- */
-private void loadSessionInfo() {
-    Session session = Session.getInstance();
-    if (session.isLoggedIn()) {
-        // Display full name from session
-        lblUsername.setText("Welcome, " + session.getFullName() + "!");
-        System.out.println("AdminDash loaded for: " + session.getUsername());
-    } else {
-        lblUsername.setText("WELCOME, ADMIN!");
-    }
+  private void loadUserAccountInfo() {
+        Session session = Session.getInstance();
+        
+        if (session.isLoggedIn()) {
+            // Display user information from session
+            lblAccountIdValue.setText(String.valueOf(session.getUserId()));
+            lblNameValue.setText(session.getFullName());
+            lblUsernameValue.setText(session.getUsername());
+            lblEmailValue.setText(session.getEmail());
+            
+            // Update the welcome message in sidebar
+            lblUsername.setText("Welcome, " + session.getFullName() + "!");
+        } else {
+            // If no session, show default values
+            lblAccountIdValue.setText("N/A");
+            lblNameValue.setText("N/A");
+            lblUsernameValue.setText("N/A");
+            lblEmailValue.setText("N/A");
+            lblUsername.setText("WELCOME, ADMIN!");
+        }
 }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -77,7 +73,14 @@ private void loadSessionInfo() {
         lblUsername = new javax.swing.JLabel();
         accountpanel = new javax.swing.JPanel();
         account = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        lblAccountIdValue = new javax.swing.JLabel();
+        lblNameValue = new javax.swing.JLabel();
+        lblUsernameValue = new javax.swing.JLabel();
+        lblEmailValue = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -185,35 +188,54 @@ private void loadSessionInfo() {
 
         getContentPane().add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 490));
 
-        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
+        jPanel1.setBackground(new java.awt.Color(51, 153, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblAccountIdValue.setText("ID");
+        jPanel1.add(lblAccountIdValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, -1, -1));
+
+        lblNameValue.setText("FULL NAME");
+        jPanel1.add(lblNameValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 180, 140, -1));
+
+        lblUsernameValue.setText("username");
+        jPanel1.add(lblUsernameValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 100, -1, -1));
+
+        lblEmailValue.setText("email");
+        jPanel1.add(lblEmailValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 120, -1, -1));
+
+        jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        jLabel1.setText("ACCOUNT ID:");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
+
+        jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        jLabel3.setText("USERNAME:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 80, -1));
+
+        jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        jLabel2.setText("EMAIL:");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 120, -1, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 620, 260));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
-     Listofusers u = new Listofusers(loggedInUsername); // ← PASS USERNAME
-   u.setVisible(true);
-   this.dispose();
-    }//GEN-LAST:event_userpanelMouseClicked
-
     private void exitpanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitpanel1MouseClicked
-         // Clear session on logout
-    Session session = Session.getInstance();
-    session.logout();
-    
-    // Return to login
-    LoginForm lf = new LoginForm();
-    lf.setVisible(true);
-    this.dispose();
+        LoginForm lf = new LoginForm();
+        lf.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_exitpanel1MouseClicked
 
+    private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
+        String loggedInUsername = null;
+        Listofusers u = new Listofusers(loggedInUsername); // ← PASS USERNAME
+        u.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_userpanelMouseClicked
+
     private void accountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountMouseClicked
-       ACCOUNT a = new ACCOUNT();
-       a.setVisible(true);
-       this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_accountMouseClicked
 
     /**
@@ -233,20 +255,23 @@ private void loadSessionInfo() {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ACCOUNT.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ACCOUNT.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ACCOUNT.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ACCOUNT.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminDash().setVisible(true);
+                new ACCOUNT().setVisible(true);
             }
         });
     }
@@ -262,8 +287,15 @@ private void loadSessionInfo() {
     private javax.swing.JLabel exit;
     private javax.swing.JPanel exitpanel;
     private javax.swing.JPanel exitpanel1;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblAccountIdValue;
+    private javax.swing.JLabel lblEmailValue;
+    private javax.swing.JLabel lblNameValue;
     private javax.swing.JLabel lblUsername;
+    private javax.swing.JLabel lblUsernameValue;
     private javax.swing.JPanel listadmin;
     private javax.swing.JLabel payment;
     private javax.swing.JPanel paymentpanel;

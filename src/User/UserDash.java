@@ -6,7 +6,7 @@
 package User;
 
 import Login.LoginForm;
-
+import Session.Session;
 /**
  *
  * @author ashlaran
@@ -24,6 +24,7 @@ public class UserDash extends javax.swing.JFrame {
     public UserDash() {
         initComponents();
         this.loggedInUsername = "User"; // Default
+         loadSessionInfo();  
     }
     
     /**
@@ -33,7 +34,18 @@ public class UserDash extends javax.swing.JFrame {
         initComponents();
         this.loggedInUsername = username;
         lblUsername.setText("Welcome, " + username + "!"); // Display username
+        loadSessionInfo(); 
     }
+    private void loadSessionInfo() {
+    Session session = Session.getInstance();
+    if (session.isLoggedIn()) {
+        // Display full name from session
+        lblUsername.setText("Welcome, " + session.getFullName() + "!");
+        System.out.println("UserDash loaded for: " + session.getUsername());
+    } else {
+        lblUsername.setText("WELCOME!");
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
