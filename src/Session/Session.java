@@ -61,21 +61,13 @@ public class Session {
         this.lastname = lastname;
         this.email = email;
         this.userType = userType;
-        
-        System.out.println("=== SESSION STARTED ===");
-        System.out.println("User: " + username);
-        System.out.println("Type: " + userType);
-        System.out.println("=======================");
+        // Console output removed - session created silently
     }
     
     /**
      * End the current session (logout)
      */
     public void logout() {
-        System.out.println("=== SESSION ENDED ===");
-        System.out.println("User: " + username + " logged out");
-        System.out.println("=====================");
-        
         // Clear all session data
         this.userId = -1;
         this.username = "";
@@ -156,8 +148,6 @@ public class Session {
      * Print session info to console (for debugging)
      */
     public void printSessionInfo() {
-        System.out.println("\n=== CURRENT SESSION ===");
-        System.out.println(getSessionInfo());
-        System.out.println("=======================\n");
+        // Console output removed for production use
     }
 }

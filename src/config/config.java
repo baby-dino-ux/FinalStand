@@ -23,13 +23,46 @@ public class config {
     public static Connection connectDB() {
         Connection con = null;
         try {
-            Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
-            con = DriverManager.getConnection("jdbc:sqlite:clean.db"); // Establish connection
+            Class.forName("org.sqlite.JDBC");
+            con = DriverManager.getConnection("jdbc:sqlite:clean.db");
             System.out.println("Connection Successful");
         } catch (Exception e) {
             System.out.println("Connection Failed: " + e);
         }
         return con;
+    }
+
+    /**
+     * Run once on app startup to ensure the status column exists.
+     * Safe to call every time — it handles the error if column already exists.
+     */
+    public void setupDatabase() {
+        try (Connection conn = connectDB()) {
+
+            // Add status column if it doesn't exist yet
+            try (PreparedStatement pstmt = conn.prepareStatement(
+                    "ALTER TABLE tbl_users ADD COLUMN status TEXT DEFAULT 'Pending'")) {
+                pstmt.executeUpdate();
+                System.out.println("Status column added successfully!");
+            } catch (SQLException e) {
+                // Column already exists — this is fine, just ignore
+                System.out.println("Setup note (safe to ignore): " + e.getMessage());
+            }
+
+            // Make sure all existing Admin accounts are Active
+            try (PreparedStatement pstmt2 = conn.prepareStatement(
+                    "UPDATE tbl_users SET status = 'Active' WHERE type = 'Admin' AND (status IS NULL OR status = 'Pending')")) {
+                int rows = pstmt2.executeUpdate();
+                if (rows > 0) {
+                    System.out.println("Admin accounts set to Active: " + rows);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error updating admin status: " + e.getMessage());
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database setup error: " + e.getMessage());
+        }
     }
     
     public void addRecord(String sql, Object... values) {
@@ -67,10 +100,7 @@ public class config {
     }
     
     /**
-     * Get username for the logged-in user
-     * @param sql SQL query
-     * @param values Parameters for SQL query
-     * @return Username string
+     * Get username for the logged-in user.
      */
     public String getUsername(String sql, Object... values) {
         try (Connection conn = connectDB();
@@ -88,20 +118,19 @@ public class config {
         } catch (SQLException e) {
             System.out.println("Error getting username: " + e.getMessage());
         }
-        return "User"; // Default fallback
+        return "User";
     }
     
     /**
-     * Get complete user data for session management
-     * UPDATED: Now checks if 'id' column exists in the table, and uses ROWID if it doesn't
-     * @param email User email
-     * @param password User password
-     * @return UserData object with all user information, or null if not found
+     * Get complete user data for session management.
+     * Includes the 'status' column (Pending / Active / Rejected).
+     * Falls back to ROWID if 'id' column doesn't exist.
      */
     public UserData getUserData(String email, String password) {
-        // First, try to get data WITH id column
-        String sqlWithId = "SELECT id, username, firstname, lastname, email, password, type " +
-                          "FROM tbl_users WHERE email = ? AND password = ?";
+        
+        // First try WITH the id column
+        String sqlWithId = "SELECT id, username, firstname, lastname, email, password, type, status " +
+                           "FROM tbl_users WHERE email = ? AND password = ?";
         
         try (Connection conn = connectDB();
              PreparedStatement pstmt = conn.prepareStatement(sqlWithId)) {
@@ -118,16 +147,17 @@ public class config {
                         rs.getString("lastname"),
                         rs.getString("email"),
                         rs.getString("password"),
-                        rs.getString("type")
+                        rs.getString("type"),
+                        rs.getString("status")    // ← NEW
                     );
                 }
             }
         } catch (SQLException e) {
-            // If 'id' column doesn't exist, try with ROWID
+            // If 'id' column doesn't exist, fall back to ROWID
             System.out.println("ID column not found, trying with ROWID: " + e.getMessage());
             
-            String sqlWithRowId = "SELECT ROWID as id, username, firstname, lastname, email, password, type " +
-                                 "FROM tbl_users WHERE email = ? AND password = ?";
+            String sqlWithRowId = "SELECT ROWID as id, username, firstname, lastname, email, password, type, status " +
+                                  "FROM tbl_users WHERE email = ? AND password = ?";
             
             try (Connection conn = connectDB();
                  PreparedStatement pstmt = conn.prepareStatement(sqlWithRowId)) {
@@ -144,7 +174,8 @@ public class config {
                             rs.getString("lastname"),
                             rs.getString("email"),
                             rs.getString("password"),
-                            rs.getString("type")
+                            rs.getString("type"),
+                            rs.getString("status")    // ← NEW
                         );
                     }
                 } catch (SQLException ex) {
@@ -158,28 +189,24 @@ public class config {
     }
     
     /**
-     * Display data in JTable without using DbUtils library
-     * This is a custom implementation that converts ResultSet to TableModel
+     * Display data in JTable without using DbUtils library.
+     * Custom implementation that converts ResultSet to TableModel.
      */
     public void displayData(String sql, javax.swing.JTable table) {
         try (Connection conn = connectDB();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             
-            // Get metadata to determine column count and names
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
             
-            // Create column names array
             String[] columnNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
                 columnNames[i - 1] = metaData.getColumnName(i);
             }
             
-            // Create table model
             DefaultTableModel model = new DefaultTableModel(columnNames, 0);
             
-            // Add rows to the model
             while (rs.next()) {
                 Object[] row = new Object[columnCount];
                 for (int i = 1; i <= columnCount; i++) {
@@ -188,7 +215,6 @@ public class config {
                 model.addRow(row);
             }
             
-            // Set the model to the table
             table.setModel(model);
             
         } catch (SQLException e) {
@@ -197,7 +223,7 @@ public class config {
     }
     
     /**
-     * Update a record in the database
+     * Update a record in the database.
      */
     public void updateRecord(String sql, Object... values) {
         try (Connection conn = connectDB();
@@ -215,7 +241,7 @@ public class config {
     }
     
     /**
-     * Delete a record from the database
+     * Delete a record from the database.
      */
     public void deleteRecord(String sql, Object... values) {
         try (Connection conn = connectDB();
@@ -233,7 +259,7 @@ public class config {
     }
     
     /**
-     * Get a single value from the database
+     * Get a single value from the database.
      */
     public Object getValue(String sql, Object... values) {
         try (Connection conn = connectDB();
@@ -252,5 +278,9 @@ public class config {
             System.out.println("Error getting value: " + e.getMessage());
         }
         return null;
+    }
+
+    public void setupBookingTable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

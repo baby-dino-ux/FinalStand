@@ -1,51 +1,38 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Admin;
 
-import Login.LoginForm;
+import AdminInternalPage.Profile;
+import LoginandRegister.LoginForm;
 import Session.Session;
-/**
- *
- * @author ashlaran
- */
+import javax.swing.JOptionPane;
+
 public class AdminDash extends javax.swing.JFrame {
-    
-  private String loggedInUsername;
-    /**
-     * Creates new form AdminDash
-     */
+
+     private String loggedInUsername;
+
+    // Default constructor
     public AdminDash() {
         initComponents();
-         this.loggedInUsername = "Admin"; // Default
-           loadSessionInfo();
+        this.loggedInUsername = "Admin";
+        loadSessionInfo();
     }
 
-    /**
-     * Constructor with username parameter
-     */
+    // Constructor with username — called from LoginForm
     public AdminDash(String username) {
         initComponents();
         this.loggedInUsername = username;
-        lblUsername.setText("Welcome, " + username + "!"); // Display username
-          loadSessionInfo();
+        loadSessionInfo();
+    }
+
+    private void loadSessionInfo() {
+        Session session = Session.getInstance();
+        if (session.isLoggedIn()) {
+            lblUsername.setText(session.getFullName());
+        } else {
+            lblUsername.setText("ADMIN");
+        }
     }
     
-    /**
- * Load and display session information
- */
-private void loadSessionInfo() {
-    Session session = Session.getInstance();
-    if (session.isLoggedIn()) {
-        // Display full name from session
-        lblUsername.setText("Welcome, " + session.getFullName() + "!");
-        System.out.println("AdminDash loaded for: " + session.getUsername());
-    } else {
-        lblUsername.setText("WELCOME, ADMIN!");
-    }
-}
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -56,56 +43,67 @@ private void loadSessionInfo() {
     private void initComponents() {
 
         listadmin = new javax.swing.JPanel();
-        exitpanel1 = new javax.swing.JPanel();
-        LOGOUT1 = new javax.swing.JLabel();
+        settings = new javax.swing.JLabel();
+        lblUsername = new javax.swing.JLabel();
         dashpanel = new javax.swing.JPanel();
         dashboard1 = new javax.swing.JLabel();
         userpanel = new javax.swing.JPanel();
-        user = new javax.swing.JLabel();
-        bookingpanel = new javax.swing.JPanel();
-        booking = new javax.swing.JLabel();
+        users = new javax.swing.JLabel();
+        mstaffpanel = new javax.swing.JPanel();
+        mstaff = new javax.swing.JLabel();
+        memployeepanel = new javax.swing.JPanel();
+        memployee = new javax.swing.JLabel();
         servicepanel = new javax.swing.JPanel();
         service = new javax.swing.JLabel();
+        bookingpanel = new javax.swing.JPanel();
+        booking = new javax.swing.JLabel();
+        reportspanel = new javax.swing.JPanel();
+        review = new javax.swing.JLabel();
+        reports = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        lg = new javax.swing.JLabel();
+        exit = new javax.swing.JLabel();
+        admindashboard = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         paymentpanel = new javax.swing.JPanel();
         payment = new javax.swing.JLabel();
-        staffpanel = new javax.swing.JPanel();
-        staff = new javax.swing.JLabel();
-        exitpanel = new javax.swing.JPanel();
-        exit = new javax.swing.JLabel();
-        reviewpanel = new javax.swing.JPanel();
-        review = new javax.swing.JLabel();
-        lblUsername = new javax.swing.JLabel();
-        accountpanel = new javax.swing.JPanel();
-        account = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        listadmin.setBackground(new java.awt.Color(204, 204, 204));
+        listadmin.setBackground(new java.awt.Color(55, 86, 93));
         listadmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        exitpanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+        settings.setBackground(new java.awt.Color(255, 255, 255));
+        settings.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user (1).png"))); // NOI18N
+        settings.setText("ACCOUNT");
+        settings.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                exitpanel1MouseClicked(evt);
+                settingsMouseClicked(evt);
             }
         });
-        exitpanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        listadmin.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 10, 290, 50));
 
-        LOGOUT1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        LOGOUT1.setText("LOGOUT");
-        exitpanel1.add(LOGOUT1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 80, 20));
+        lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        lblUsername.setText("ADMIN");
+        listadmin.add(lblUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, 90, -1));
 
-        listadmin.add(exitpanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 170, 40));
-
+        dashpanel.setBackground(new java.awt.Color(29, 45, 61));
         dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        dashboard1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        dashboard1.setText("DASHBOARD");
-        dashpanel.add(dashboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 110, 20));
+        dashboard1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        dashboard1.setForeground(new java.awt.Color(239, 234, 234));
+        dashboard1.setText("Dashboard");
+        dashpanel.add(dashboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, 20));
 
-        listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 170, 40));
+        listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 160, 40));
 
+        userpanel.setBackground(new java.awt.Color(29, 45, 61));
         userpanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 userpanelMouseClicked(evt);
@@ -113,80 +111,124 @@ private void loadSessionInfo() {
         });
         userpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        user.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        user.setText("USERS");
-        userpanel.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 70, -1));
+        users.setBackground(new java.awt.Color(29, 45, 61));
+        users.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        users.setForeground(new java.awt.Color(239, 234, 234));
+        users.setText("Users");
+        userpanel.add(users, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, -1));
 
-        listadmin.add(userpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 170, 40));
+        listadmin.add(userpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 160, 40));
 
-        bookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        mstaffpanel.setBackground(new java.awt.Color(29, 45, 61));
+        mstaffpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        booking.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        booking.setText("BOOKINGS");
-        bookingpanel.add(booking, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, -1));
+        mstaff.setBackground(new java.awt.Color(212, 226, 240));
+        mstaff.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        mstaff.setForeground(new java.awt.Color(239, 234, 234));
+        mstaff.setText("Manage Staff");
+        mstaffpanel.add(mstaff, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
 
-        listadmin.add(bookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 170, 40));
+        listadmin.add(mstaffpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
 
+        memployeepanel.setBackground(new java.awt.Color(29, 45, 61));
+        memployeepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        memployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        memployee.setForeground(new java.awt.Color(239, 234, 234));
+        memployee.setText("Manage Employee");
+        memployeepanel.add(memployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 120, -1));
+
+        listadmin.add(memployeepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
+
+        servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        service.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        service.setText("SERVICES");
-        servicepanel.add(service, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 100, -1));
+        service.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        service.setForeground(new java.awt.Color(239, 234, 234));
+        service.setText("Services");
+        servicepanel.add(service, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 60, -1));
 
-        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 170, 40));
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 160, 40));
 
-        paymentpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        bookingpanel.setBackground(new java.awt.Color(29, 45, 61));
+        bookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        payment.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        payment.setText("PAYMENTS");
-        paymentpanel.add(payment, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 110, -1));
+        booking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        booking.setForeground(new java.awt.Color(239, 234, 234));
+        booking.setText("Booking");
+        bookingpanel.add(booking, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
 
-        listadmin.add(paymentpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 170, 40));
+        listadmin.add(bookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 160, 40));
 
-        staffpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        staff.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        staff.setText("STAFF");
-        staffpanel.add(staff, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 60, -1));
-
-        listadmin.add(staffpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 170, 40));
-
-        exitpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        exit.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        exit.setText("MONITOR");
-        exitpanel.add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 100, -1));
-
-        listadmin.add(exitpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 170, 40));
-
-        reviewpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        reportspanel.setBackground(new java.awt.Color(29, 45, 61));
+        reportspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         review.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        review.setText("REVIEWS ");
-        reviewpanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
+        reportspanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
 
-        listadmin.add(reviewpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 170, 40));
+        reports.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        reports.setForeground(new java.awt.Color(239, 234, 234));
+        reports.setText("Reports");
+        reportspanel.add(reports, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 60, -1));
 
-        lblUsername.setText("WELCOME, ADMIN!");
-        listadmin.add(lblUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, -1));
+        listadmin.add(reportspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 160, 40));
 
-        accountpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 160, -1));
 
-        account.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        account.setText("ACCOUNT");
-        account.addMouseListener(new java.awt.event.MouseAdapter() {
+        jPanel4.setBackground(new java.awt.Color(232, 230, 230));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBackground(new java.awt.Color(29, 45, 61));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lg.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        lg.setForeground(new java.awt.Color(239, 234, 234));
+        lg.setText("Log Out");
+        jPanel1.add(lg, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 10, -1, 20));
+
+        exit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/logout (2).png"))); // NOI18N
+        exit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                accountMouseClicked(evt);
+                exitMouseClicked(evt);
             }
         });
-        accountpanel.add(account, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 110, 20));
+        jPanel1.add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 30, 20));
 
-        listadmin.add(accountpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 450, 170, 40));
+        admindashboard.setFont(new java.awt.Font("Bahnschrift", 0, 18)); // NOI18N
+        admindashboard.setForeground(new java.awt.Color(239, 234, 234));
+        admindashboard.setText("ADMIN DASHBOARD");
+        jPanel1.add(admindashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 190, 50));
 
-        getContentPane().add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 490));
+        jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, 640, 50));
 
-        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel6.setBackground(java.awt.SystemColor.textHighlightText);
+        jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 80, 150, 130));
+
+        jPanel5.setBackground(java.awt.SystemColor.textHighlightText);
+        jPanel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 80, 150, 130));
+
+        jPanel2.setBackground(new java.awt.Color(29, 45, 61));
+        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 390, 160, 100));
+
+        jPanel3.setBackground(java.awt.SystemColor.textHighlightText);
+        jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 80, 150, 130));
+
+        paymentpanel.setBackground(new java.awt.Color(29, 45, 61));
+        paymentpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        payment.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        payment.setForeground(new java.awt.Color(239, 234, 234));
+        payment.setText("Payment");
+        paymentpanel.add(payment, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, 20));
+
+        jPanel4.add(paymentpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 160, 40));
+
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
 
         pack();
@@ -194,86 +236,86 @@ private void loadSessionInfo() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
-     Listofusers u = new Listofusers(loggedInUsername); // ← PASS USERNAME
-   u.setVisible(true);
-   this.dispose();
+   // Open List of Users
+        Listofusers lou = new Listofusers();
+        lou.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_userpanelMouseClicked
 
-    private void exitpanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitpanel1MouseClicked
-         // Clear session on logout
-    Session session = Session.getInstance();
-    session.logout();
-    
-    // Return to login
-    LoginForm lf = new LoginForm();
-    lf.setVisible(true);
-    this.dispose();
-    }//GEN-LAST:event_exitpanel1MouseClicked
+    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
+        Profile a = new Profile();
+        a.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_settingsMouseClicked
 
-    private void accountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountMouseClicked
-       ACCOUNT a = new ACCOUNT();
-       a.setVisible(true);
-       this.dispose();
-    }//GEN-LAST:event_accountMouseClicked
+    private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
+ int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?",
+            "Log Out", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            Session.getInstance().logout();
+            LoginForm lf = new LoginForm();
+            lf.setVisible(true);
+            this.dispose();
+        }
+            // TODO add your handling code here:
+    }//GEN-LAST:event_exitMouseClicked
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+          Session session = Session.getInstance();
+        if (!session.isLoggedIn()) {
+            JOptionPane.showMessageDialog(null,
+                "Please login first!",
+                "Unauthorized Access",
+                JOptionPane.WARNING_MESSAGE);
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    new LoginForm().setVisible(true);
                 }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            });
+            return;
         }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AdminDash().setVisible(true);
             }
         });
-    }
+    
+}
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel LOGOUT1;
-    private javax.swing.JLabel account;
-    private javax.swing.JPanel accountpanel;
+    private javax.swing.JLabel admindashboard;
     private javax.swing.JLabel booking;
     private javax.swing.JPanel bookingpanel;
     private javax.swing.JLabel dashboard1;
     private javax.swing.JPanel dashpanel;
     private javax.swing.JLabel exit;
-    private javax.swing.JPanel exitpanel;
-    private javax.swing.JPanel exitpanel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel lblUsername;
+    private javax.swing.JLabel lg;
     private javax.swing.JPanel listadmin;
+    private javax.swing.JLabel memployee;
+    private javax.swing.JPanel memployeepanel;
+    private javax.swing.JLabel mstaff;
+    private javax.swing.JPanel mstaffpanel;
     private javax.swing.JLabel payment;
     private javax.swing.JPanel paymentpanel;
+    private javax.swing.JLabel reports;
+    private javax.swing.JPanel reportspanel;
     private javax.swing.JLabel review;
-    private javax.swing.JPanel reviewpanel;
     private javax.swing.JLabel service;
     private javax.swing.JPanel servicepanel;
-    private javax.swing.JLabel staff;
-    private javax.swing.JPanel staffpanel;
-    private javax.swing.JLabel user;
+    private javax.swing.JLabel settings;
     private javax.swing.JPanel userpanel;
+    private javax.swing.JLabel users;
     // End of variables declaration//GEN-END:variables
 }
