@@ -141,6 +141,11 @@ public class AdminDash extends javax.swing.JFrame {
         listadmin.add(memployeepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
+        servicepanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                servicepanelMouseClicked(evt);
+            }
+        });
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         service.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
@@ -260,6 +265,12 @@ public class AdminDash extends javax.swing.JFrame {
         }
             // TODO add your handling code here:
     }//GEN-LAST:event_exitMouseClicked
+
+    private void servicepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_servicepanelMouseClicked
+       Services s = new Services();
+       s.setVisible(true);
+       this.dispose();
+    }//GEN-LAST:event_servicepanelMouseClicked
 
     /**
      * @param args the command line arguments

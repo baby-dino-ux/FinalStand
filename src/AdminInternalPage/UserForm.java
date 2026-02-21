@@ -48,12 +48,13 @@ public class UserForm extends javax.swing.JFrame {
         lastnamefield = new javax.swing.JTextField();
         lastname = new javax.swing.JLabel();
         email = new javax.swing.JLabel();
-        idfield = new javax.swing.JTextField();
+        fnamefield = new javax.swing.JTextField();
         passwordfield = new javax.swing.JTextField();
         password = new javax.swing.JLabel();
         emailfield = new javax.swing.JTextField();
         useername = new javax.swing.JLabel();
         usernamefield = new javax.swing.JTextField();
+        idfield1 = new javax.swing.JTextField();
 
         firstnamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         firstnamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -142,12 +143,12 @@ public class UserForm extends javax.swing.JFrame {
         email.setText("Email:");
         jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 210, 90, 30));
 
-        idfield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        idfield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        idfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
-        idfield.setEnabled(false);
-        idfield.setOpaque(false);
-        jPanel1.add(idfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 210, 30));
+        fnamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        fnamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        fnamefield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
+        fnamefield.setEnabled(false);
+        fnamefield.setOpaque(false);
+        jPanel1.add(fnamefield, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 130, 210, 30));
 
         passwordfield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         passwordfield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -177,6 +178,13 @@ public class UserForm extends javax.swing.JFrame {
         usernamefield.setOpaque(false);
         jPanel1.add(usernamefield, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 250, 210, 30));
 
+        idfield1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        idfield1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        idfield1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
+        idfield1.setEnabled(false);
+        idfield1.setOpaque(false);
+        jPanel1.add(idfield1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 210, 30));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -204,7 +212,7 @@ public class UserForm extends javax.swing.JFrame {
 
     private void addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseClicked
          // Validate fields
-        String fn = firstnamefield.getText().trim();
+        String fn = fnamefield.getText().trim();
         String ln = lastnamefield.getText().trim();
         String em = emailfield.getText().trim();
         String un = usernamefield.getText().trim();
@@ -279,7 +287,7 @@ public class UserForm extends javax.swing.JFrame {
     private void loadSessionInfo() {
         Session session = Session.getInstance();
         if (session.isLoggedIn()) {
-            idfield.setText(String.valueOf(session.getUserId()));
+            fnamefield.setText(String.valueOf(session.getUserId()));
             firstnamefield.setText(session.getFirstname());
             lastnamefield.setText(session.getLastname());
             emailfield.setText(session.getEmail());
@@ -320,8 +328,9 @@ public class UserForm extends javax.swing.JFrame {
     private javax.swing.JLabel exit;
     private javax.swing.JLabel firstname;
     public javax.swing.JTextField firstnamefield;
+    public javax.swing.JTextField fnamefield;
     private javax.swing.JLabel id;
-    public javax.swing.JTextField idfield;
+    public javax.swing.JTextField idfield1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel label1;

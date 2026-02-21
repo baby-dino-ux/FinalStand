@@ -63,14 +63,18 @@ public class UserDash extends javax.swing.JFrame {
         dashpanel = new javax.swing.JPanel();
         dashboard = new javax.swing.JLabel();
         createbookingpanel = new javax.swing.JPanel();
-        addbooking = new javax.swing.JLabel();
+        addbooking1 = new javax.swing.JLabel();
         bookingpanel = new javax.swing.JPanel();
         bookingpanel1 = new javax.swing.JPanel();
+        addbooking2 = new javax.swing.JLabel();
         servicepanel = new javax.swing.JPanel();
         paymentpanel = new javax.swing.JPanel();
+        addbooking4 = new javax.swing.JLabel();
         staffpanel = new javax.swing.JPanel();
+        addbooking = new javax.swing.JLabel();
         reviewpanel = new javax.swing.JPanel();
         review = new javax.swing.JLabel();
+        addbooking3 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lg = new javax.swing.JLabel();
@@ -119,11 +123,11 @@ public class UserDash extends javax.swing.JFrame {
         });
         createbookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        addbooking.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking.setText("Create Booking");
-        createbookingpanel.add(addbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+        addbooking1.setBackground(new java.awt.Color(29, 45, 61));
+        addbooking1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        addbooking1.setForeground(new java.awt.Color(239, 234, 234));
+        addbooking1.setText("Create Booking");
+        createbookingpanel.add(addbooking1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
 
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 160, 40));
 
@@ -134,6 +138,12 @@ public class UserDash extends javax.swing.JFrame {
         bookingpanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         bookingpanel.add(bookingpanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
 
+        addbooking2.setBackground(new java.awt.Color(29, 45, 61));
+        addbooking2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        addbooking2.setForeground(new java.awt.Color(239, 234, 234));
+        addbooking2.setText("View Services");
+        bookingpanel.add(addbooking2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
         listadmin.add(bookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
@@ -142,10 +152,24 @@ public class UserDash extends javax.swing.JFrame {
 
         paymentpanel.setBackground(new java.awt.Color(29, 45, 61));
         paymentpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        addbooking4.setBackground(new java.awt.Color(29, 45, 61));
+        addbooking4.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        addbooking4.setForeground(new java.awt.Color(239, 234, 234));
+        addbooking4.setText("My Bookings");
+        paymentpanel.add(addbooking4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
         listadmin.add(paymentpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 160, 40));
 
         staffpanel.setBackground(new java.awt.Color(29, 45, 61));
         staffpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        addbooking.setBackground(new java.awt.Color(29, 45, 61));
+        addbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        addbooking.setForeground(new java.awt.Color(239, 234, 234));
+        addbooking.setText("Generate Receipt");
+        staffpanel.add(addbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 120, -1));
+
         listadmin.add(staffpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 160, 40));
 
         reviewpanel.setBackground(new java.awt.Color(29, 45, 61));
@@ -153,6 +177,12 @@ public class UserDash extends javax.swing.JFrame {
 
         review.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         reviewpanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
+
+        addbooking3.setBackground(new java.awt.Color(29, 45, 61));
+        addbooking3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        addbooking3.setForeground(new java.awt.Color(239, 234, 234));
+        addbooking3.setText("Available Cleaner");
+        reviewpanel.add(addbooking3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 120, -1));
 
         listadmin.add(reviewpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
 
@@ -255,6 +285,10 @@ public class UserDash extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel addbooking;
+    private javax.swing.JLabel addbooking1;
+    private javax.swing.JLabel addbooking2;
+    private javax.swing.JLabel addbooking3;
+    private javax.swing.JLabel addbooking4;
     private javax.swing.JPanel bookingpanel;
     private javax.swing.JPanel bookingpanel1;
     private javax.swing.JPanel createbookingpanel;

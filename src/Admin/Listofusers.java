@@ -374,6 +374,11 @@ public class Listofusers extends javax.swing.JFrame {
                 searchfieldActionPerformed(evt);
             }
         });
+        searchfield.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                searchfieldKeyTyped(evt);
+            }
+        });
         jPanel4.add(searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 160, 30));
 
         search.setFont(new java.awt.Font("Bahnschrift", 1, 14)); // NOI18N
@@ -541,6 +546,10 @@ public class Listofusers extends javax.swing.JFrame {
     private void dashpanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanel1MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_dashpanel1MouseClicked
+
+    private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
+ loadUsers(searchfield.getText());       
+    }//GEN-LAST:event_searchfieldKeyTyped
 
     /**
      * @param args the command line arguments
