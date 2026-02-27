@@ -32,17 +32,21 @@ public class Listofusers extends javax.swing.JFrame {
         }
     }
 
-    // ── Load / filter users ──────────────────────────────────────────────────
+    // ── Load / filter users — Admins are never shown in this list ───────────
     private void loadUsers(String keyword) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
         String sql;
         if (keyword == null || keyword.trim().isEmpty()) {
-            sql = "SELECT id, firstname, lastname, email, status, type FROM tbl_users";
-        } else {
+            // Exclude Admin accounts entirely
             sql = "SELECT id, firstname, lastname, email, status, type FROM tbl_users " +
-                  "WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ? OR status LIKE ?";
+                  "WHERE type != 'Admin'";
+        } else {
+            // Exclude Admin accounts AND apply keyword filter
+            sql = "SELECT id, firstname, lastname, email, status, type FROM tbl_users " +
+                  "WHERE type != 'Admin' " +
+                  "AND (firstname LIKE ? OR lastname LIKE ? OR email LIKE ? OR status LIKE ?)";
         }
 
         try (Connection conn = config.connectDB();
@@ -72,7 +76,6 @@ public class Listofusers extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error loading users: " + e.getMessage(),
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
     }
 
     // ── Fetch username for a given user ID (for Update pre-fill) ─────────────
@@ -214,6 +217,11 @@ public class Listofusers extends javax.swing.JFrame {
         listadmin.add(memployeepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
+        servicepanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                servicepanelMouseClicked(evt);
+            }
+        });
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         services.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
@@ -446,10 +454,19 @@ public class Listofusers extends javax.swing.JFrame {
     }//GEN-LAST:event_addpanelMouseClicked
 
     private void updatepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updatepanelMouseClicked
-        int row = table.getSelectedRow();
+       int row = table.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Please select a user to edit.",
                 "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Safety guard — Admin accounts must never be edited here
+        String selectedType = String.valueOf(table.getValueAt(row, 5));
+        if ("Admin".equalsIgnoreCase(selectedType)) {
+            JOptionPane.showMessageDialog(this,
+                "Admin accounts cannot be edited from this panel.",
+                "Not Allowed", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -482,6 +499,15 @@ public class Listofusers extends javax.swing.JFrame {
         String id   = String.valueOf(table.getValueAt(row, 0));
         String name = table.getValueAt(row, 1) + " " + table.getValueAt(row, 2);
 
+        // Safety guard — Admin accounts must never be deleted here
+        String selectedType = String.valueOf(table.getValueAt(row, 5));
+        if ("Admin".equalsIgnoreCase(selectedType)) {
+            JOptionPane.showMessageDialog(this,
+                "Admin accounts cannot be deleted from this panel.",
+                "Not Allowed", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         int confirm = JOptionPane.showConfirmDialog(this,
             "Delete " + name + "? This cannot be undone.",
             "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -495,7 +521,7 @@ public class Listofusers extends javax.swing.JFrame {
     }//GEN-LAST:event_deletepanelMouseClicked
 
     private void approvepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_approvepanelMouseClicked
-      int row = table.getSelectedRow();
+       int row = table.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Please select a user to approve.",
                 "No Selection", JOptionPane.WARNING_MESSAGE);
@@ -505,6 +531,15 @@ public class Listofusers extends javax.swing.JFrame {
         String id     = String.valueOf(table.getValueAt(row, 0));
         String name   = table.getValueAt(row, 1) + " " + table.getValueAt(row, 2);
         String status = String.valueOf(table.getValueAt(row, 4));
+
+        // Safety guard — Admin accounts must never be approved/modified here
+        String selectedType = String.valueOf(table.getValueAt(row, 5));
+        if ("Admin".equalsIgnoreCase(selectedType)) {
+            JOptionPane.showMessageDialog(this,
+                "Admin accounts cannot be modified from this panel.",
+                "Not Allowed", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         if ("Active".equalsIgnoreCase(status)) {
             JOptionPane.showMessageDialog(this, name + " is already Active.",
@@ -550,6 +585,12 @@ public class Listofusers extends javax.swing.JFrame {
     private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
  loadUsers(searchfield.getText());       
     }//GEN-LAST:event_searchfieldKeyTyped
+
+    private void servicepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_servicepanelMouseClicked
+        Services s = new Services();
+        s.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_servicepanelMouseClicked
 
     /**
      * @param args the command line arguments

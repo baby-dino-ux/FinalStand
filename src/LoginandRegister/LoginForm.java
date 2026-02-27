@@ -32,7 +32,7 @@ public class LoginForm extends javax.swing.JFrame {
         mid = new javax.swing.JLabel();
         signup = new javax.swing.JLabel();
         logo = new javax.swing.JLabel();
-        passwordfield = new javax.swing.JTextField();
+        passwordfield = new javax.swing.JPasswordField();
         email = new javax.swing.JTextField();
         donthaveanaccount = new javax.swing.JLabel();
         signin = new javax.swing.JLabel();
@@ -61,7 +61,12 @@ public class LoginForm extends javax.swing.JFrame {
         getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(-150, 10, 310, 120));
 
         passwordfield.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255)));
-        getContentPane().add(passwordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 270, 240, 30));
+        passwordfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordfieldActionPerformed(evt);
+            }
+        });
+        getContentPane().add(passwordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(311, 270, 240, 30));
 
         email.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255), new java.awt.Color(51, 51, 255)));
         getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 200, 240, 30));
@@ -181,6 +186,10 @@ public class LoginForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_signinMouseClicked
 
+    private void passwordfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordfieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordfieldActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -225,7 +234,7 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel logo;
     private javax.swing.JLabel mid;
-    private javax.swing.JTextField passwordfield;
+    private javax.swing.JPasswordField passwordfield;
     private javax.swing.JLabel signin;
     private javax.swing.JLabel signup;
     // End of variables declaration//GEN-END:variables

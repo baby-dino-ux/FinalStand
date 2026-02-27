@@ -7,8 +7,9 @@ import Session.Session;
 import config.config;
 import java.util.UUID;
 import javax.swing.JOptionPane;
+import config.PasswordUtil;
 public class Form extends javax.swing.JFrame {
-    
+   
     private String mode   = "Add"; // "Add" or "Update"
     private String userId = null;
     private config conf   = new config();
@@ -92,6 +93,7 @@ public class Form extends javax.swing.JFrame {
         }
 
         return true;
+    
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -334,7 +336,7 @@ public class Form extends javax.swing.JFrame {
             conf.addRecord(
                 "INSERT INTO tbl_users (firstname, lastname, email, username, password, type, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                fn, ln, em, un, generatedPassword, tp, stat
+                fn, ln, em, un, PasswordUtil.hash(generatedPassword), tp, stat // store hash
             );
             // Show the generated password to the admin so they can share it
             JOptionPane.showMessageDialog(this,

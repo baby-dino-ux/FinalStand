@@ -5,6 +5,7 @@
  */
 package Admin;
 
+
 import AdminInternalPage.Profile;
 import AdminInternalPage.ServiceForm;
 import LoginandRegister.LoginForm;
@@ -16,13 +17,26 @@ import javax.swing.table.DefaultTableModel;
 public class Services extends javax.swing.JFrame {
 
    
+   
+   
     private final config conf = new config();
 
     public Services() {
         initComponents();
+        loadSessionInfo();
         loadTable("");
     }
 
+
+ // ── Show logged-in admin name in the sidebar label ───────────────────────
+    private void loadSessionInfo() {
+        Session session = Session.getInstance();
+        if (session.isLoggedIn()) {
+            lblUsername.setText(session.getFullName());
+        } else {
+            lblUsername.setText("ADMIN");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,6 +82,8 @@ public class Services extends javax.swing.JFrame {
         reports = new javax.swing.JLabel();
         paymentpanel = new javax.swing.JPanel();
         payment = new javax.swing.JLabel();
+        approvepanel = new javax.swing.JPanel();
+        approve = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -103,13 +119,13 @@ public class Services extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Service ID", "Services", "Price"
+                "Service ID", "Services", "Price", "Status"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -128,7 +144,7 @@ public class Services extends javax.swing.JFrame {
         add.setText("ADD");
         addpanel.add(add);
 
-        jPanel4.add(addpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 60, 60, 30));
+        jPanel4.add(addpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 60, 60, 30));
 
         editpanel.setBackground(new java.awt.Color(29, 45, 61));
         editpanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -142,7 +158,7 @@ public class Services extends javax.swing.JFrame {
         edit.setText("EDIT");
         editpanel.add(edit);
 
-        jPanel4.add(editpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 60, 60, 30));
+        jPanel4.add(editpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 60, 60, 30));
 
         deletepanel.setBackground(new java.awt.Color(29, 45, 61));
         deletepanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -287,18 +303,35 @@ public class Services extends javax.swing.JFrame {
 
         jPanel4.add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        approvepanel.setBackground(new java.awt.Color(29, 45, 61));
+        approvepanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                approvepanelMouseClicked(evt);
+            }
+        });
+
+        approve.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        approve.setForeground(new java.awt.Color(239, 234, 234));
+        approve.setText("APPROVE");
+        approvepanel.add(approve);
+
+        jPanel4.add(approvepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 60, 70, 30));
+
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, -1));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    
+   
      public void loadTable(String keyword) {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
 
-        String sql = "SELECT s_id, s_name, s_price FROM tbl_services "
+        // Ensure s_status column exists (safe to call every time)
+        ensureStatusColumn();
+
+        String sql = "SELECT s_id, s_name, s_price, s_status FROM tbl_services "
                    + "WHERE s_name LIKE ? ORDER BY s_id";
         try (Connection con = config.connectDB();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -308,7 +341,8 @@ public class Services extends javax.swing.JFrame {
                     model.addRow(new Object[]{
                         rs.getInt("s_id"),
                         rs.getString("s_name"),
-                        rs.getInt("s_price")
+                        rs.getInt("s_price"),
+                        rs.getString("s_status") != null ? rs.getString("s_status") : "Active"
                     });
                 }
             }
@@ -316,6 +350,52 @@ public class Services extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,
                 "Error loading services:\n" + e.getMessage(),
                 "DB Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Adds s_status column to tbl_services if it does not exist yet. */
+    private void ensureStatusColumn() {
+        try (Connection con = config.connectDB();
+             PreparedStatement ps = con.prepareStatement(
+                 "ALTER TABLE tbl_services ADD COLUMN s_status TEXT DEFAULT 'Active'")) {
+            ps.executeUpdate();
+            // Also set any NULL rows to Active
+            try (PreparedStatement ps2 = con.prepareStatement(
+                     "UPDATE tbl_services SET s_status = 'Active' WHERE s_status IS NULL")) {
+                ps2.executeUpdate();
+            }
+        } catch (SQLException e) {
+            // Column already exists — safe to ignore
+        }
+    }
+
+    /** Toggle the selected service between Active and Inactive. */
+    private void toggleServiceStatus() {
+        int row = jTable1.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a service to toggle status.",
+                "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        int    id            = ((Number) model.getValueAt(row, 0)).intValue();
+        String name          = (String)  model.getValueAt(row, 1);
+        String currentStatus = String.valueOf(model.getValueAt(row, 3));
+        String newStatus     = "Active".equalsIgnoreCase(currentStatus) ? "Inactive" : "Active";
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Set \"" + name + "\" status to " + newStatus + "?",
+            "Confirm", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            conf.updateRecord(
+                "UPDATE tbl_services SET s_status = ? WHERE s_id = ?",
+                newStatus, id);
+            JOptionPane.showMessageDialog(this,
+                "\"" + name + "\" is now " + newStatus + ".",
+                "Updated", JOptionPane.INFORMATION_MESSAGE);
+            loadTable(searchfield.getText().trim());
         }
     }
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
@@ -359,17 +439,18 @@ public class Services extends javax.swing.JFrame {
             return;
         }
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        int    id    = ((Number) model.getValueAt(row, 0)).intValue();
-        String name  = (String)  model.getValueAt(row, 1);
-        int    price = ((Number) model.getValueAt(row, 2)).intValue();
+        int    id     = ((Number) model.getValueAt(row, 0)).intValue();
+        String name   = (String)  model.getValueAt(row, 1);
+        int    price  = ((Number) model.getValueAt(row, 2)).intValue();
+        String status = String.valueOf(model.getValueAt(row, 3));
 
         // Open ServiceForm in EDIT mode
-        ServiceForm sf = new ServiceForm(id, name, price, this);
+        ServiceForm sf = new ServiceForm(id, name, price, status, this);
         sf.setVisible(true);
     }//GEN-LAST:event_editpanelMouseClicked
 
     private void deletepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deletepanelMouseClicked
-       int row = jTable1.getSelectedRow();
+      int row = jTable1.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this,
                 "Please select a service to delete.",
@@ -401,6 +482,10 @@ public class Services extends javax.swing.JFrame {
         loadTable(searchfield.getText().trim());
     }//GEN-LAST:event_searchfieldKeyTyped
 
+    private void approvepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_approvepanelMouseClicked
+        toggleServiceStatus();
+    }//GEN-LAST:event_approvepanelMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -429,6 +514,8 @@ public class Services extends javax.swing.JFrame {
     private javax.swing.JLabel add;
     private javax.swing.JPanel addpanel;
     private javax.swing.JLabel admindashboard;
+    private javax.swing.JLabel approve;
+    private javax.swing.JPanel approvepanel;
     private javax.swing.JLabel booking;
     private javax.swing.JPanel bookingpanel;
     private javax.swing.JLabel dashboard1;

@@ -12,8 +12,7 @@ import Session.Session;
 import config.config;
 import javax.swing.JOptionPane;
 public class ServiceForm extends javax.swing.JFrame {
-
-    private final config conf = new config();
+ private final config conf = new config();
     private int     serviceId;
     private Services parentServices;
 
@@ -24,34 +23,50 @@ public class ServiceForm extends javax.swing.JFrame {
      * @param parent Services window — refreshed after save
      */
     public ServiceForm(int id, String name, int priceV, Services parent) {
+        this(id, name, priceV, "Active", parent); // default status Active
+    }
+
+    public ServiceForm(int id, String name, int priceV, String statusV, Services parent) {
         this.serviceId      = id;
         this.parentServices = parent;
         initComponents();
 
+        // Wire the radio buttons into a ButtonGroup so only one can be selected
+        javax.swing.ButtonGroup statusGroup = new javax.swing.ButtonGroup();
+        statusGroup.add(active);
+        statusGroup.add(inactive);
+
         // Enable fields so user can type
         servicenamefield.setEnabled(true);
         pricefield.setEnabled(true);
-        idfield.setEnabled(false);   // ID is always read-only
+        idfield.setEnabled(false); // ID is always read-only
 
         if (id > 0) {
-            // EDIT mode
+            // EDIT mode — pre-fill all fields including status
             label1.setText("Edit Service");
             st_label.setText("Update");
             idfield.setText(String.valueOf(id));
             servicenamefield.setText(name);
             pricefield.setText(String.valueOf(priceV));
+            if ("Inactive".equalsIgnoreCase(statusV)) {
+                inactive.setSelected(true);
+            } else {
+                active.setSelected(true);
+            }
         } else {
-            // ADD mode
+            // ADD mode — default to Active
             label1.setText("Add Services");
             st_label.setText("Save");
             idfield.setText("Auto");
+            active.setSelected(true);
         }
     }
 
     /** No-arg constructor for NetBeans designer */
     public ServiceForm() {
-        this(0, "", 0, null);
+        this(0, "", 0, "Active", null);
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -64,11 +79,14 @@ public class ServiceForm extends javax.swing.JFrame {
         add = new javax.swing.JPanel();
         st_label = new javax.swing.JLabel();
         servicename = new javax.swing.JLabel();
-        price = new javax.swing.JLabel();
+        status = new javax.swing.JLabel();
         pricefield = new javax.swing.JTextField();
         servicenamefield = new javax.swing.JTextField();
         serviceid = new javax.swing.JLabel();
         idfield = new javax.swing.JTextField();
+        price1 = new javax.swing.JLabel();
+        inactive = new javax.swing.JRadioButton();
+        active = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -82,7 +100,7 @@ public class ServiceForm extends javax.swing.JFrame {
 
         label1.setFont(new java.awt.Font("Bahnschrift", 1, 24)); // NOI18N
         label1.setForeground(new java.awt.Color(239, 234, 234));
-        label1.setText("Add Services");
+        label1.setText(" Services");
         jPanel2.add(label1);
         label1.setBounds(0, 0, 300, 40);
 
@@ -131,10 +149,10 @@ public class ServiceForm extends javax.swing.JFrame {
         servicename.setText("Service Name:");
         jPanel1.add(servicename, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 100, 30));
 
-        price.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        price.setForeground(new java.awt.Color(239, 234, 234));
-        price.setText("Price:");
-        jPanel1.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 100, 30));
+        status.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        status.setForeground(new java.awt.Color(239, 234, 234));
+        status.setText("Status: ");
+        jPanel1.add(status, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 250, 100, 30));
 
         pricefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         pricefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -161,6 +179,33 @@ public class ServiceForm extends javax.swing.JFrame {
         idfield.setEnabled(false);
         idfield.setOpaque(false);
         jPanel1.add(idfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 110, 210, 30));
+
+        price1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        price1.setForeground(new java.awt.Color(239, 234, 234));
+        price1.setText("Price:");
+        jPanel1.add(price1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 100, 30));
+
+        inactive.setBackground(new java.awt.Color(55, 86, 93));
+        inactive.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        inactive.setForeground(new java.awt.Color(255, 255, 255));
+        inactive.setText("Inactive");
+        inactive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inactiveActionPerformed(evt);
+            }
+        });
+        jPanel1.add(inactive, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 250, 80, 30));
+
+        active.setBackground(new java.awt.Color(55, 86, 93));
+        active.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        active.setForeground(new java.awt.Color(255, 255, 255));
+        active.setText("Active");
+        active.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                activeActionPerformed(evt);
+            }
+        });
+        jPanel1.add(active, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 250, 80, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -197,7 +242,7 @@ public class ServiceForm extends javax.swing.JFrame {
     }//GEN-LAST:event_exitMouseClicked
 
     private void addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseClicked
-         String name      = servicenamefield.getText().trim();
+          String name      = servicenamefield.getText().trim();
         String priceText = pricefield.getText().trim();
 
         // Validate
@@ -225,20 +270,23 @@ public class ServiceForm extends javax.swing.JFrame {
             return;
         }
 
+        // Read selected status from radio buttons
+        String statusVal = active.isSelected() ? "Active" : "Inactive";
+
         // DB operation
         if (serviceId == 0) {
-            // INSERT
+            // INSERT — includes s_status
             conf.addRecord(
-                "INSERT INTO tbl_services (s_name, s_price) VALUES (?, ?)",
-                name, priceVal
+                "INSERT INTO tbl_services (s_name, s_price, s_status) VALUES (?, ?, ?)",
+                name, priceVal, statusVal
             );
             JOptionPane.showMessageDialog(this,
                 "Service added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            // UPDATE
+            // UPDATE — includes s_status
             conf.updateRecord(
-                "UPDATE tbl_services SET s_name = ?, s_price = ? WHERE s_id = ?",
-                name, priceVal, serviceId
+                "UPDATE tbl_services SET s_name = ?, s_price = ?, s_status = ? WHERE s_id = ?",
+                name, priceVal, statusVal, serviceId
             );
             JOptionPane.showMessageDialog(this,
                 "Service updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -258,6 +306,14 @@ public class ServiceForm extends javax.swing.JFrame {
     private void addMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseExited
    add.setBackground(new java.awt.Color(55, 86, 93));
     }//GEN-LAST:event_addMouseExited
+
+    private void inactiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inactiveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inactiveActionPerformed
+
+    private void activeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_activeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -284,18 +340,21 @@ public class ServiceForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton active;
     private javax.swing.JPanel add;
     private javax.swing.JLabel ex;
     private javax.swing.JLabel exit;
     public javax.swing.JTextField idfield;
+    private javax.swing.JRadioButton inactive;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel label1;
-    private javax.swing.JLabel price;
+    private javax.swing.JLabel price1;
     public javax.swing.JTextField pricefield;
     private javax.swing.JLabel serviceid;
     private javax.swing.JLabel servicename;
     public javax.swing.JTextField servicenamefield;
     public javax.swing.JLabel st_label;
+    private javax.swing.JLabel status;
     // End of variables declaration//GEN-END:variables
 }

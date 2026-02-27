@@ -5,6 +5,7 @@
  */
 package LoginandRegister;
 
+
 import LoginandRegister.LoginForm;
 import config.config;
 import java.awt.Color;
@@ -19,8 +20,7 @@ import javax.swing.JOptionPane;
  * @author ashlaran
  */
 public class RegisterForm extends javax.swing.JFrame {
-
-     // CHANGE THIS to your database path!
+   // CHANGE THIS to your database path!
        private static final String DB_URL = "jdbc:sqlite:clean.db";
 
     /**
@@ -28,9 +28,9 @@ public class RegisterForm extends javax.swing.JFrame {
      */
     public RegisterForm() {
         initComponents();
-         new config().setupDatabase();
         
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,7 +46,7 @@ public class RegisterForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         usernanefield = new javax.swing.JTextField();
         firstnamefield = new javax.swing.JTextField();
-        passwordfield = new javax.swing.JTextField();
+        passwordfield = new javax.swing.JPasswordField();
         lastnamefield = new javax.swing.JTextField();
         emailfield = new javax.swing.JTextField();
         background = new javax.swing.JLabel();
@@ -135,7 +135,7 @@ public class RegisterForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-     private boolean isValidEmail(String email) {
+      private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(emailRegex);
     }
@@ -226,6 +226,7 @@ public class RegisterForm extends javax.swing.JFrame {
         return hasLetter && hasDigit;
     
 
+
     }
     private void firstnamefieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstnamefieldActionPerformed
         // TODO add your handling code here:
@@ -293,57 +294,34 @@ public class RegisterForm extends javax.swing.JFrame {
             return;
         }
 
-        // Insert user with status = 'Pending' — admin must approve before login
-        String insertQuery = "INSERT INTO tbl_users (firstname, lastname, username, email, password, type, status) " +
-                             "VALUES (?, ?, ?, ?, ?, 'User', 'Pending')";
+        // Insert user — password is hashed inside config.registerUser()
+        config conf = new config();
+        boolean success = conf.registerUser(firstname, lastname, username, email, password);
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-
-        try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection(DB_URL);
-            pstmt = conn.prepareStatement(insertQuery);
-            pstmt.setString(1, firstname);
-            pstmt.setString(2, lastname);
-            pstmt.setString(3, username);
-            pstmt.setString(4, email);
-            pstmt.setString(5, password);
-
-            int rowsAffected = pstmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(this,
-                    "Registration Successful!\n\n" +
-                    "Your account is pending admin approval.\n" +
-                    "You will be able to login once approved.",
-                    "Account Submitted",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-                // Clear all fields
-                firstnamefield.setText("");
-                lastnamefield.setText("");
-                usernanefield.setText("");
-                emailfield.setText("");
-                passwordfield.setText("");
-
-                // Redirect to login form
-                LoginForm loginForm = new LoginForm();
-                loginForm.setVisible(true);
-                this.dispose();
-            }
-        } catch (ClassNotFoundException | SQLException e) {
+        if (success) {
             JOptionPane.showMessageDialog(this,
-                "Registration failed!\n\n" + e.getMessage(),
+                "Registration Successful!\n\n" +
+                "Your account is pending admin approval.\n" +
+                "You will be able to login once approved.",
+                "Account Submitted",
+                JOptionPane.INFORMATION_MESSAGE);
+
+            // Clear all fields
+            firstnamefield.setText("");
+            lastnamefield.setText("");
+            usernanefield.setText("");
+            emailfield.setText("");
+            passwordfield.setText("");
+
+            // Redirect to login form
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Registration failed! Please try again.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
-        } finally {
-            try {
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error closing resources: " + e.getMessage());
-            }
         }
     }//GEN-LAST:event_createbutton1MouseClicked
 
@@ -396,7 +374,7 @@ public class RegisterForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField lastnamefield;
     private javax.swing.JLabel logo;
-    private javax.swing.JTextField passwordfield;
+    private javax.swing.JPasswordField passwordfield;
     private javax.swing.JTextField usernanefield;
     // End of variables declaration//GEN-END:variables
 }
