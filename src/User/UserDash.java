@@ -57,207 +57,27 @@ public class UserDash extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        listadmin = new javax.swing.JPanel();
-        settings = new javax.swing.JLabel();
-        lblUsername = new javax.swing.JLabel();
-        dashpanel = new javax.swing.JPanel();
-        dashboard = new javax.swing.JLabel();
-        createbookingpanel = new javax.swing.JPanel();
-        addbooking1 = new javax.swing.JLabel();
-        bookingpanel = new javax.swing.JPanel();
-        bookingpanel1 = new javax.swing.JPanel();
-        addbooking2 = new javax.swing.JLabel();
-        servicepanel = new javax.swing.JPanel();
-        paymentpanel = new javax.swing.JPanel();
-        addbooking4 = new javax.swing.JLabel();
-        staffpanel = new javax.swing.JPanel();
-        addbooking = new javax.swing.JLabel();
-        reviewpanel = new javax.swing.JPanel();
-        review = new javax.swing.JLabel();
-        addbooking3 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        lg = new javax.swing.JLabel();
-        exit = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        generatereceiptpanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        listadmin.setBackground(new java.awt.Color(55, 86, 93));
-        listadmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        settings.setBackground(new java.awt.Color(255, 255, 255));
-        settings.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user (1).png"))); // NOI18N
-        settings.setText("ACCOUNT");
-        settings.addMouseListener(new java.awt.event.MouseAdapter() {
+        generatereceiptpanel2.setBackground(new java.awt.Color(153, 255, 255));
+        generatereceiptpanel2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                settingsMouseClicked(evt);
+                generatereceiptpanel2MouseClicked(evt);
             }
         });
-        listadmin.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 10, 290, 50));
-
-        lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        lblUsername.setText("Staff");
-        listadmin.add(lblUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, 90, -1));
-
-        dashpanel.setBackground(new java.awt.Color(29, 45, 61));
-        dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        dashboard.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        dashboard.setForeground(new java.awt.Color(239, 234, 234));
-        dashboard.setText("Dashboard");
-        dashpanel.add(dashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, 20));
-
-        listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 160, 40));
-
-        createbookingpanel.setBackground(new java.awt.Color(29, 45, 61));
-        createbookingpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                createbookingpanelMouseClicked(evt);
-            }
-        });
-        createbookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        addbooking1.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking1.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking1.setText("Create Booking");
-        createbookingpanel.add(addbooking1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
-
-        listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 160, 40));
-
-        bookingpanel.setBackground(new java.awt.Color(29, 45, 61));
-        bookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        bookingpanel1.setBackground(new java.awt.Color(29, 45, 61));
-        bookingpanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        bookingpanel.add(bookingpanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
-
-        addbooking2.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking2.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking2.setText("View Services");
-        bookingpanel.add(addbooking2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
-
-        listadmin.add(bookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 160, 40));
-
-        servicepanel.setBackground(new java.awt.Color(29, 45, 61));
-        servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
-
-        paymentpanel.setBackground(new java.awt.Color(29, 45, 61));
-        paymentpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        addbooking4.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking4.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking4.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking4.setText("My Bookings");
-        paymentpanel.add(addbooking4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
-
-        listadmin.add(paymentpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 160, 40));
-
-        staffpanel.setBackground(new java.awt.Color(29, 45, 61));
-        staffpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        addbooking.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking.setText("Generate Receipt");
-        staffpanel.add(addbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 120, -1));
-
-        listadmin.add(staffpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 160, 40));
-
-        reviewpanel.setBackground(new java.awt.Color(29, 45, 61));
-        reviewpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        review.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        reviewpanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
-
-        addbooking3.setBackground(new java.awt.Color(29, 45, 61));
-        addbooking3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        addbooking3.setForeground(new java.awt.Color(239, 234, 234));
-        addbooking3.setText("Available Cleaner");
-        reviewpanel.add(addbooking3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 120, -1));
-
-        listadmin.add(reviewpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
-
-        getContentPane().add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 160, -1));
-
-        jPanel4.setBackground(new java.awt.Color(232, 230, 230));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel1.setBackground(new java.awt.Color(29, 45, 61));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lg.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        lg.setForeground(new java.awt.Color(239, 234, 234));
-        lg.setText("Log Out");
-        jPanel1.add(lg, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 10, -1, 20));
-
-        exit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/logout (2).png"))); // NOI18N
-        exit.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                exitMouseClicked(evt);
-            }
-        });
-        jPanel1.add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 30, 20));
-
-        jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, 640, 50));
-
-        jPanel6.setBackground(java.awt.SystemColor.textHighlightText);
-        jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 80, 150, 130));
-
-        jPanel5.setBackground(java.awt.SystemColor.textHighlightText);
-        jPanel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 80, 150, 130));
-
-        jPanel2.setBackground(new java.awt.Color(29, 45, 61));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 160, 180));
-
-        jPanel3.setBackground(java.awt.SystemColor.textHighlightText);
-        jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 80, 150, 130));
-
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
+        generatereceiptpanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(generatereceiptpanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 10, 490));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        Profile a = new Profile();
-        a.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_settingsMouseClicked
-
-    private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
-      CreateBooking c = new CreateBooking();
-        c.setVisible(true);
-         this.dispose();
-    }//GEN-LAST:event_createbookingpanelMouseClicked
-
-    private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to log out?",
-            "Log Out", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            Session.getInstance().logout();
-            LoginForm lf = new LoginForm();
-            lf.setVisible(true);
-            this.dispose();
-        }
+    private void generatereceiptpanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generatereceiptpanel2MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_exitMouseClicked
+    }//GEN-LAST:event_generatereceiptpanel2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -284,31 +104,6 @@ public class UserDash extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel addbooking;
-    private javax.swing.JLabel addbooking1;
-    private javax.swing.JLabel addbooking2;
-    private javax.swing.JLabel addbooking3;
-    private javax.swing.JLabel addbooking4;
-    private javax.swing.JPanel bookingpanel;
-    private javax.swing.JPanel bookingpanel1;
-    private javax.swing.JPanel createbookingpanel;
-    private javax.swing.JLabel dashboard;
-    private javax.swing.JPanel dashpanel;
-    private javax.swing.JLabel exit;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JLabel lblUsername;
-    private javax.swing.JLabel lg;
-    private javax.swing.JPanel listadmin;
-    private javax.swing.JPanel paymentpanel;
-    private javax.swing.JLabel review;
-    private javax.swing.JPanel reviewpanel;
-    private javax.swing.JPanel servicepanel;
-    private javax.swing.JLabel settings;
-    private javax.swing.JPanel staffpanel;
+    private javax.swing.JPanel generatereceiptpanel2;
     // End of variables declaration//GEN-END:variables
 }
