@@ -4,7 +4,8 @@
 package LoginandRegister;
 
 import Admin.AdminDash;
-import User.UserDash;
+import Employee.EmployeeDash;
+import Staff.StaffDash;
 import config.config;
 import javax.swing.JOptionPane;
 import Session.Session;
@@ -13,9 +14,7 @@ import session.UserData;
 
 public class LoginForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form LoginForm
-     */
+  
     public LoginForm() {
         initComponents();
     }
@@ -45,7 +44,7 @@ public class LoginForm extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         mid.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/midname.png"))); // NOI18N
-        getContentPane().add(mid, new org.netbeans.lib.awtextra.AbsoluteConstraints(-110, 330, 370, 200));
+        getContentPane().add(mid, new org.netbeans.lib.awtextra.AbsoluteConstraints(-110, 290, 370, 200));
 
         signup.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         signup.setForeground(new java.awt.Color(51, 51, 255));
@@ -89,7 +88,7 @@ public class LoginForm extends javax.swing.JFrame {
         getContentPane().add(create, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 260, 340, 90));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/loginfunction_1.jpg"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 420, 440));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 420, 430));
 
         head.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/headername.png"))); // NOI18N
         getContentPane().add(head, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 470, 350));
@@ -103,102 +102,97 @@ public class LoginForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void signupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signupMouseClicked
-       RegisterForm rf = new RegisterForm();
-       rf.setVisible(true);
-       this.dispose();
+      new RegisterForm().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_signupMouseClicked
 
     private void signinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinMouseClicked
-         
-       // Get input values
-        String userEmail = email.getText().trim();
+          String userEmail    = email.getText().trim();
         String userPassword = passwordfield.getText().trim();
-        
-        // Validation
+ 
+        // ── Empty field check ─────────────────────────────────────────────────
         if (userEmail.isEmpty() || userPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Please enter both email and password!", 
-                "Login Error", 
-                JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                "Please enter both email and password!",
+                "Login Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        // Get full user data
+ 
+        // ── Fetch user from DB ────────────────────────────────────────────────
         config conf = new config();
         UserData userData = conf.getUserData(userEmail, userPassword);
-        
-        if (userData != null) {
-            
-    // ✅ CHECK ACCOUNT STATUS FIRST
-    String status = userData.getStatus();
-    if ("Pending".equalsIgnoreCase(status)) {
-        JOptionPane.showMessageDialog(this,
-            "Your account is pending admin approval.\nPlease wait before logging in.",
-            "Account Pending",
-            JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    if ("Snooze".equalsIgnoreCase(status)) {
-        JOptionPane.showMessageDialog(this,
-            "Your account has been rejected.\nPlease contact the administrator.",
-            "Account Snooze",
-            JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-            Session session = Session.getInstance();
-            session.login(
-                userData.getId(),
-                userData.getUsername(),
-                userData.getFirstname(),
-                userData.getLastname(),
-                userData.getEmail(),
-                userData.getType()
-            );
-            
-            // Redirect based on type
-            if ("Admin".equalsIgnoreCase(userData.getType())) {
-                JOptionPane.showMessageDialog(this, 
-                    "Welcome " + userData.getFirstname() + " " + userData.getLastname() + "!", 
-                    "Login Successful", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                AdminDash ad = new AdminDash(userData.getUsername());
-                ad.setVisible(true);
-                this.dispose();
-            } else if ("Staff".equalsIgnoreCase(userData.getType())) {
-                JOptionPane.showMessageDialog(this, 
-                    "Welcome " + userData.getFirstname() + " " + userData.getLastname() + "!", 
-                    "Login Successful", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                UserDash ud = new UserDash(userData.getUsername());
-                ud.setVisible(true);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Unknown user type: " + userData.getType(), 
-                    "Login Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
+ 
+        if (userData == null) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid email or password!",
+                "Login Failed", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+ 
+        // ── Status check — only Active accounts can log in ────────────────────
+        String status = userData.getStatus();
+        if (!"Active".equalsIgnoreCase(status)) {
+            JOptionPane.showMessageDialog(this,
+                "Your account is inactive.\nPlease contact the administrator to activate your account.",
+                "Account Inactive", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+ 
+        // ── Store session ─────────────────────────────────────────────────────
+        Session session = Session.getInstance();
+        session.login(
+            userData.getId(),
+            userData.getUsername(),
+            userData.getFirstname(),
+            userData.getLastname(),
+            userData.getEmail(),
+            userData.getType()
+        );
+ 
+        String type     = userData.getType();
+        String fullName = userData.getFirstname() + " " + userData.getLastname();
+ 
+        // ── Route to the correct dashboard ────────────────────────────────────
+        if ("Admin".equalsIgnoreCase(type)) {
+            JOptionPane.showMessageDialog(this,
+                "Welcome, " + userData.getUsername() + "!",
+                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            new AdminDash(userData.getUsername()).setVisible(true);
+            this.dispose();
+ 
+        } else if ("Staff".equalsIgnoreCase(type)) {
+            JOptionPane.showMessageDialog(this,
+                "Welcome, " + fullName + "!",
+                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            new StaffDash(userData.getUsername()).setVisible(true);
+            this.dispose();
+ 
+        } else if ("Employee".equalsIgnoreCase(type)) {
+            JOptionPane.showMessageDialog(this,
+                "Welcome, " + fullName + "!",
+                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            new EmployeeDash().setVisible(true);
+            this.dispose();
+ 
         } else {
-            JOptionPane.showMessageDialog(this, 
-                "Invalid email or password!", 
-                "Login Failed", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                "Unknown account type: " + type + "\nPlease contact the administrator.",
+                "Login Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_signinMouseClicked
 
     private void passwordfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordfieldActionPerformed
-        // TODO add your handling code here:
+          signinMouseClicked(null);
     }//GEN-LAST:event_passwordfieldActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        // ── FIX: Run database setup FIRST to ensure all columns exist ─────────
+        // This adds b_staff, b_address, b_contact etc. to tbl_bookings if missing
+        new config().setupDatabase();
+ 
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -206,23 +200,12 @@ public class LoginForm extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(LoginForm.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginForm().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

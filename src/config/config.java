@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import session.UserData;
 
@@ -37,30 +38,91 @@ public class config {
      * Safe to call every time — it handles the error if column already exists.
      */
     public void setupDatabase() {
+
         try (Connection conn = connectDB()) {
 
-            // Add status column if it doesn't exist yet
+            // ── Add status column to users table (account status: Active/Inactive) ──
             try (PreparedStatement pstmt = conn.prepareStatement(
-                    "ALTER TABLE tbl_users ADD COLUMN status TEXT DEFAULT 'Pending'")) {
+                    "ALTER TABLE tbl_users ADD COLUMN status TEXT DEFAULT 'Inactive'")) {
                 pstmt.executeUpdate();
-                System.out.println("Status column added successfully!");
             } catch (SQLException e) {
-                // Column already exists — this is fine, just ignore
-                System.out.println("Setup note (safe to ignore): " + e.getMessage());
+                // Column already exists — silent ignore
             }
 
-            // Make sure all existing Admin accounts are Active
-            try (PreparedStatement pstmt2 = conn.prepareStatement(
-                    "UPDATE tbl_users SET status = 'Active' WHERE type = 'Admin' AND (status IS NULL OR status = 'Pending')")) {
-                int rows = pstmt2.executeUpdate();
-                if (rows > 0) {
-                    System.out.println("Admin accounts set to Active: " + rows);
+            // ── Add work_status column (Available/Busy/Off Duty — employees only) ──
+            try (PreparedStatement pstmt = conn.prepareStatement(
+                    "ALTER TABLE tbl_users ADD COLUMN work_status TEXT DEFAULT 'Available'")) {
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                // Column already exists — silent ignore
+            }
+
+
+            // ── Add description column to tbl_services ───────────────────────
+            try (PreparedStatement p = conn.prepareStatement(
+                    "ALTER TABLE tbl_services ADD COLUMN s_description TEXT DEFAULT ''")) {
+                p.executeUpdate();
+            } catch (SQLException e) {
+                // Column already exists — silent ignore
+            }
+
+            // ── Ensure tbl_feedback exists with all columns ───────────────────
+            try (PreparedStatement p = conn.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS tbl_feedback " +
+                    "(f_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "f_employee TEXT, f_rating TEXT, f_comment TEXT, " +
+                    "f_date TEXT, f_booking_id INTEGER DEFAULT NULL)")) {
+                p.executeUpdate();
+            } catch (SQLException e) {
+                // Table already exists — silent ignore
+            }
+            try (PreparedStatement p = conn.prepareStatement(
+                    "ALTER TABLE tbl_feedback ADD COLUMN f_booking_id INTEGER DEFAULT NULL")) {
+                p.executeUpdate();
+            } catch (SQLException e) {
+                // Column already exists — silent ignore
+            }
+            String[] newCols = {
+
+                "ALTER TABLE tbl_bookings ADD COLUMN b_address TEXT DEFAULT NULL",
+                "ALTER TABLE tbl_bookings ADD COLUMN b_contact TEXT DEFAULT NULL",
+                "ALTER TABLE tbl_bookings ADD COLUMN b_email TEXT DEFAULT NULL",
+                "ALTER TABLE tbl_bookings ADD COLUMN b_tasknote TEXT DEFAULT NULL",
+                "ALTER TABLE tbl_bookings ADD COLUMN b_staff TEXT DEFAULT NULL"
+
+            };
+
+            for (String colSql : newCols) {
+
+                try (PreparedStatement p = conn.prepareStatement(colSql)) {
+
+                    p.executeUpdate();
+
+                } catch (SQLException e) {
+                    // Column already exists — silent ignore
                 }
+            }
+
+
+            // ── Make sure Admin accounts are Active ──────────────────────────
+            try (PreparedStatement pstmt2 = conn.prepareStatement(
+                    "UPDATE tbl_users SET status = 'Active' WHERE type = 'Admin' AND (status IS NULL OR status = 'Inactive' OR status = 'Pending')")) {
+                int rows = pstmt2.executeUpdate();
+                if (rows > 0) System.out.println("Admin accounts set to Active: " + rows);
             } catch (SQLException e) {
                 System.out.println("Error updating admin status: " + e.getMessage());
             }
 
+            // ── Set default work_status for employees who have none yet ──────
+            try (PreparedStatement pstmt3 = conn.prepareStatement(
+                    "UPDATE tbl_users SET work_status = 'Available' WHERE type = 'Employee' AND (work_status IS NULL OR work_status = '')")) {
+                pstmt3.executeUpdate();
+            } catch (SQLException e) {
+                // ignore
+            }
+
         } catch (SQLException e) {
+
             System.out.println("Database setup error: " + e.getMessage());
         }
     }
@@ -181,34 +243,47 @@ public class config {
     }
     
     /**
-     * Display data in JTable without using DbUtils library.
-     * Custom implementation that converts ResultSet to TableModel.
+     * Display data in JTable — supports optional query parameters (varargs).
+     * Works for both parameterless queries and queries with one or more ? placeholders.
      */
-    public void displayData(String sql, javax.swing.JTable table) {
+    public void displayData(String sql, JTable table, String... params) {
         try (Connection conn = connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            
-            String[] columnNames = new String[columnCount];
-            for (int i = 1; i <= columnCount; i++) {
-                columnNames[i - 1] = metaData.getColumnName(i);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Bind any ? parameters passed in
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setString(i + 1, params[i]);
             }
-            
-            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-            
-            while (rs.next()) {
-                Object[] row = new Object[columnCount];
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                // Build column headers using label (respects AS aliases in SQL)
+                String[] columnNames = new String[columnCount];
                 for (int i = 1; i <= columnCount; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    columnNames[i - 1] = metaData.getColumnLabel(i);
                 }
-                model.addRow(row);
+
+                // Build rows
+                DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false; // make table read-only
+                    }
+                };
+
+                while (rs.next()) {
+                    Object[] row = new Object[columnCount];
+                    for (int i = 1; i <= columnCount; i++) {
+                        row[i - 1] = rs.getObject(i);
+                    }
+                    model.addRow(row);
+                }
+
+                table.setModel(model);
             }
-            
-            table.setModel(model);
-            
+
         } catch (SQLException e) {
             System.out.println("Error displaying data: " + e.getMessage());
         }

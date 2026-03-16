@@ -1,7 +1,7 @@
 package AdminInternalPage;
 
 
-import Admin.Listofusers;
+import Admin.Users;
 import LoginandRegister.LoginForm;
 import Session.Session;
 import config.config;
@@ -27,7 +27,7 @@ public class Form extends javax.swing.JFrame {
     public Form(String mode, String id, String firstname, String lastname,
                 String email, String username, String type, String status) {
         initComponents();
-        wireButtonGroups();           // wire AFTER initComponents so objects are final
+        wireButtonGroups();
         setMode(mode);
         this.userId = id;
 
@@ -39,19 +39,17 @@ public class Form extends javax.swing.JFrame {
             usernamefield.setText(username != null ? username : "");
 
             // Pre-select TYPE radio button from the database value
-            if ("Cleaner".equalsIgnoreCase(type)) {
-                cleanerbutt.setSelected(true);
+            if ("Employee".equalsIgnoreCase(type)) {
+                Employeebutt.setSelected(true);
             } else {
                 staffbutt1.setSelected(true); // default Staff
             }
 
-            // Pre-select STATUS radio button from the database value
+            // Pre-select STATUS radio button
             if ("Active".equalsIgnoreCase(status)) {
                 active.setSelected(true);
-            } else if ("Pending".equalsIgnoreCase(status)) {
-                pending.setSelected(true);
             } else {
-                snooze.setSelected(true); // Snooze = account deactivated
+                Inactive.setSelected(true);
             }
         } else {
             active.setSelected(true);
@@ -93,8 +91,9 @@ public class Form extends javax.swing.JFrame {
         }
 
         return true;
-    
     }
+
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -114,19 +113,19 @@ public class Form extends javax.swing.JFrame {
         lastnamefield = new javax.swing.JTextField();
         lastname = new javax.swing.JLabel();
         status = new javax.swing.JLabel();
-        idfield = new javax.swing.JTextField();
         type = new javax.swing.JLabel();
-        cleanerbutt = new javax.swing.JRadioButton();
-        snooze = new javax.swing.JRadioButton();
+        Employeebutt = new javax.swing.JRadioButton();
+        Inactive = new javax.swing.JRadioButton();
         usernamefield = new javax.swing.JTextField();
         username = new javax.swing.JLabel();
         staffbutt1 = new javax.swing.JRadioButton();
         active = new javax.swing.JRadioButton();
-        pending = new javax.swing.JRadioButton();
         email2 = new javax.swing.JLabel();
         emailfield1 = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        idfield = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(29, 45, 61));
@@ -181,7 +180,7 @@ public class Form extends javax.swing.JFrame {
         st_label.setText("Label");
         add.add(st_label, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 100, 20));
 
-        jPanel1.add(add, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 370, 100, 40));
+        jPanel1.add(add, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 390, 100, 40));
 
         id.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         id.setForeground(new java.awt.Color(239, 234, 234));
@@ -215,39 +214,32 @@ public class Form extends javax.swing.JFrame {
         status.setText("Status:");
         jPanel1.add(status, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 330, 90, 30));
 
-        idfield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        idfield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        idfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
-        idfield.setEnabled(false);
-        idfield.setOpaque(false);
-        jPanel1.add(idfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 210, 30));
-
         type.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         type.setForeground(new java.awt.Color(239, 234, 234));
         type.setText("Type:");
         jPanel1.add(type, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 280, 90, 30));
 
-        cleanerbutt.setBackground(new java.awt.Color(55, 86, 93));
-        cleanerbutt.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
-        cleanerbutt.setForeground(new java.awt.Color(255, 255, 255));
-        cleanerbutt.setText("Cleaner");
-        cleanerbutt.addActionListener(new java.awt.event.ActionListener() {
+        Employeebutt.setBackground(new java.awt.Color(55, 86, 93));
+        Employeebutt.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        Employeebutt.setForeground(new java.awt.Color(255, 255, 255));
+        Employeebutt.setText("Employee");
+        Employeebutt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cleanerbuttActionPerformed(evt);
+                EmployeebuttActionPerformed(evt);
             }
         });
-        jPanel1.add(cleanerbutt, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 290, 90, 30));
+        jPanel1.add(Employeebutt, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 290, 90, 30));
 
-        snooze.setBackground(new java.awt.Color(55, 86, 93));
-        snooze.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
-        snooze.setForeground(new java.awt.Color(255, 255, 255));
-        snooze.setText("Snooze");
-        snooze.addActionListener(new java.awt.event.ActionListener() {
+        Inactive.setBackground(new java.awt.Color(55, 86, 93));
+        Inactive.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        Inactive.setForeground(new java.awt.Color(255, 255, 255));
+        Inactive.setText("Inactive");
+        Inactive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snoozeActionPerformed(evt);
+                InactiveActionPerformed(evt);
             }
         });
-        jPanel1.add(snooze, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 330, 90, 30));
+        jPanel1.add(Inactive, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 330, 90, 30));
 
         usernamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         usernamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -280,18 +272,7 @@ public class Form extends javax.swing.JFrame {
                 activeActionPerformed(evt);
             }
         });
-        jPanel1.add(active, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 80, 30));
-
-        pending.setBackground(new java.awt.Color(55, 86, 93));
-        pending.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
-        pending.setForeground(new java.awt.Color(255, 255, 255));
-        pending.setText("Pending");
-        pending.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pendingActionPerformed(evt);
-            }
-        });
-        jPanel1.add(pending, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 330, 90, 30));
+        jPanel1.add(active, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 330, 80, 30));
 
         email2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         email2.setForeground(new java.awt.Color(239, 234, 234));
@@ -304,61 +285,51 @@ public class Form extends javax.swing.JFrame {
         emailfield1.setOpaque(false);
         jPanel1.add(emailfield1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 210, 210, 30));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -20, -1, 430));
+        jPanel3.setBackground(new java.awt.Color(29, 45, 61));
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        idfield.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        idfield.setForeground(new java.awt.Color(239, 234, 234));
+        idfield.setText("ID");
+        jPanel3.add(idfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 20, 40, 30));
+
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 420, 320));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -20, -1, 440));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseClicked
-   
-        // Step 1 — Validate
-        if (!validateFields()) {
-            return; // validateFields() already shows the error dialog
-        }
+     if (!validateFields()) return;
 
-        // Step 2 — Collect field values
         String fn   = fnamefield.getText().trim();
         String ln   = lastnamefield.getText().trim();
         String em   = emailfield1.getText().trim();
         String un   = usernamefield.getText().trim();
-        String tp   = staffbutt1.isSelected() ? "Staff" : "Cleaner";
-        String stat = active.isSelected()  ? "Active"
-                    : pending.isSelected() ? "Pending"
-                    : "Snooze";
+        String tp   = staffbutt1.isSelected() ? "Staff" : "Employee";
+        String stat = active.isSelected() ? "Active" : "Inactive";
 
-        // Step 3 — Execute SQL
         if ("Add".equals(mode)) {
-            // Auto-generate a secure temporary password (first 8 chars of a UUID, uppercase)
             String generatedPassword = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
-
-            // INSERT — 7 columns, 7 values (auto-generated password included)
             conf.addRecord(
-                "INSERT INTO tbl_users (firstname, lastname, email, username, password, type, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                fn, ln, em, un, PasswordUtil.hash(generatedPassword), tp, stat // store hash
+                "INSERT INTO tbl_users (firstname, lastname, email, username, password, type, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                fn, ln, em, un, PasswordUtil.hash(generatedPassword), tp, stat
             );
-            // Show the generated password to the admin so they can share it
             JOptionPane.showMessageDialog(this,
-                "User added successfully!\n\n" +
-                "Temporary Password: " + generatedPassword + "\n\n" +
-                "Please share this with the user so they can log in.",
+                "User added successfully!\nTemporary Password: " + generatedPassword,
                 "Success — Save This Password", JOptionPane.INFORMATION_MESSAGE);
-
         } else {
-            // UPDATE — saves firstname, lastname, email, username, TYPE and status.
-            // Password is never touched here.
             conf.updateRecord(
-                "UPDATE tbl_users SET firstname=?, lastname=?, email=?, username=?, type=?, status=? " +
-                "WHERE id=?",
+                "UPDATE tbl_users SET firstname=?, lastname=?, email=?, username=?, type=?, status=? WHERE id=?",
                 fn, ln, em, un, tp, stat, Integer.parseInt(userId)
             );
-            JOptionPane.showMessageDialog(this,
-                "User updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        // Step 4 — Close the form (triggers windowClosed in Listofusers → reloads table)
-        dispose();
+        dispose(); // Close form
             
     }//GEN-LAST:event_addMouseClicked
 
@@ -370,13 +341,13 @@ public class Form extends javax.swing.JFrame {
   
     }//GEN-LAST:event_addMouseExited
 
-    private void cleanerbuttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cleanerbuttActionPerformed
+    private void EmployeebuttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EmployeebuttActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cleanerbuttActionPerformed
+    }//GEN-LAST:event_EmployeebuttActionPerformed
 
-    private void snoozeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_snoozeActionPerformed
+    private void InactiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InactiveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_snoozeActionPerformed
+    }//GEN-LAST:event_InactiveActionPerformed
 
     private void staffbutt1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_staffbutt1ActionPerformed
         // TODO add your handling code here:
@@ -386,54 +357,38 @@ public class Form extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_activeActionPerformed
 
-    private void pendingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pendingActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pendingActionPerformed
-
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
-            "Discard changes and close?", "Confirm Exit", javax.swing.JOptionPane.YES_NO_OPTION);
-        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-            dispose(); // triggers windowClosed → Listofusers reloads the table
-        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Discard changes and close?", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) dispose();
     }//GEN-LAST:event_exitMouseClicked
+
+    private void wireButtonGroups() {
+        buttonGroup1.add(staffbutt1);   // Type: Staff / Employee
+        buttonGroup1.add(Employeebutt);
+        buttonGroup2.add(active);       // Status: Active / Inactive
+        buttonGroup2.add(Inactive);
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Session session = Session.getInstance();
+         Session session = Session.getInstance();
         if (!session.isLoggedIn()) {
-            JOptionPane.showMessageDialog(null,
-                "Please login first!",
-                "Unauthorized Access",
-                JOptionPane.WARNING_MESSAGE);
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    new LoginForm().setVisible(true);
-                }
-            });
+            JOptionPane.showMessageDialog(null, "Please login first!", "Unauthorized Access", JOptionPane.WARNING_MESSAGE);
+            java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
             return;
         }
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Form().setVisible(true);
-            }
-        });
-    }
-   private void wireButtonGroups() {
-        buttonGroup1.add(staffbutt1);   // Type: Staff / Cleaner
-        buttonGroup1.add(cleanerbutt);
-        buttonGroup2.add(active);       // Status: Active / Pending / Snooze
-        buttonGroup2.add(pending);
-        buttonGroup2.add(snooze);
+        java.awt.EventQueue.invokeLater(() -> new Form().setVisible(true));
+    
    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton Employeebutt;
+    private javax.swing.JRadioButton Inactive;
     private javax.swing.JRadioButton active;
     private javax.swing.JPanel add;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.JRadioButton cleanerbutt;
     private javax.swing.JLabel email2;
     public javax.swing.JTextField emailfield1;
     private javax.swing.JLabel ex;
@@ -441,14 +396,13 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JLabel firstname;
     public javax.swing.JTextField fnamefield;
     private javax.swing.JLabel id;
-    public javax.swing.JTextField idfield;
+    private javax.swing.JLabel idfield;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel label1;
     private javax.swing.JLabel lastname;
     public javax.swing.JTextField lastnamefield;
-    private javax.swing.JRadioButton pending;
-    private javax.swing.JRadioButton snooze;
     public javax.swing.JLabel st_label;
     private javax.swing.JRadioButton staffbutt1;
     private javax.swing.JLabel status;
@@ -456,10 +410,6 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JLabel username;
     public javax.swing.JTextField usernamefield;
     // End of variables declaration//GEN-END:variables
-
-    private Listofusers Listofusers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
   
 }
