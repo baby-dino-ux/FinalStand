@@ -48,23 +48,11 @@ public class MyBookingForm extends javax.swing.JFrame {
     }
 
     public MyBookingForm(MyBookings aThis) {
-        initComponents();
-        loadServicesCombo();
-        loadEmployeesCombo();
-        this.parentTable = aThis;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public MyBookingForm(int id, String customer, String service, String employee, String date, MyBookings aThis) {
-        initComponents();
-        this.bookingId   = id;
-        this.parentTable = aThis;
-        loadServicesCombo();
-        loadEmployeesCombo();
-        fullnamefield.setText(customer);
-        bookingdatefield.setText(date);
-        serviceslist.setSelectedItem(service);
-        assignemployeelist.setSelectedItem(employee);
-        loadExtraFields(id);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
  
     // ── Load extra fields that are not passed via constructor ─────────────────
@@ -116,7 +104,7 @@ public class MyBookingForm extends javax.swing.JFrame {
         String sql = "SELECT (firstname || ' ' || lastname) AS fullname " +
                      "FROM tbl_users " +
                      "WHERE type = 'Employee' " +
-                     "AND (work_status = 'Available' OR work_status = 'Busy') " +
+                     "AND (status = 'Available' OR status = 'Busy') " +
                      "ORDER BY firstname ASC";
         try (Connection conn = config.connectDB();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -161,7 +149,7 @@ public class MyBookingForm extends javax.swing.JFrame {
         contactnumber = new javax.swing.JLabel();
         serviceslist = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(29, 45, 61));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));

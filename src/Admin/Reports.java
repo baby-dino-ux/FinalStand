@@ -5,198 +5,24 @@
  */
 package Admin;
 
-// ── Imports ──────────────────────────────────────────────────────────────
-import AdminInternalPage.Profile;
-import Admin.Services;
-import Admin.Users;
-import Admin.Employee;
-import Admin.Bookings;
-import Staff.Feedback;
-import Session.Session;
-import config.config;
-import LoginandRegister.LoginForm;
-import javax.swing.JOptionPane;
+/**
+ *
+ * @author ashlaran
+ */
 public class Reports extends javax.swing.JFrame {
 
-   
-// ── Constructor ──────────────────────────────────────────────────────────
-public Reports() {
-    initComponents();
-    loadSessionInfo();
-    loadStats();
-    loadTopCleaners();
-
-    // ── Populate report type combobox with real options ───────────────────
-    reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
-        "All Bookings",
-        "Completed Only",
-        "Pending Only",
-        "Cancelled Only",
-        "In Progress Only",
-        "By Cleaner",
-        "By Service",
-        "Revenue Summary"
-    }));
-
-    // ── Date field placeholders ───────────────────────────────────────────
-    setPlaceholder(datefromfield, "YYYY-MM-DD");
-    setPlaceholder(datetofield,   "YYYY-MM-DD");
-
-    // ── Auto-generate report when combobox changes ────────────────────────
-    reporttypecombobox.addActionListener(e -> generateReport());
-
-    // ── Load default report on open ───────────────────────────────────────
-    generateReport();
-}
-
-private void loadSessionInfo() {
-    Session session = Session.getInstance();
-    lblUsername.setText(session.isLoggedIn() ? session.getFullName() : "Admin");
-}
-
-private void loadStats() {
-    config conf = new config();
-    Object revenue   = conf.getValue("SELECT COALESCE(SUM(b_price),0) FROM tbl_bookings WHERE b_status = 'Done'");
-    Object total     = conf.getValue("SELECT COUNT(*) FROM tbl_bookings");
-    Object completed = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_status = 'Done'");
-    Object cancelled = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_status = 'Cancelled'");
-    Object pending   = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_status = 'Pending'");
-    Object progress  = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_status = 'In Progress'");
-
-    totalrevenuenum.setText  ("₱" + (revenue   != null ? revenue.toString()   : "0"));
-    totalbookingsnum.setText  (total     != null ? total.toString()     : "0");
-    totalcompletednum.setText (completed != null ? completed.toString() : "0");
-    totalcancellednum.setText (cancelled != null ? cancelled.toString() : "0");
-    totalpendingnum.setText   (pending   != null ? pending.toString()   : "0");
-
-    // Summary section
-    summarytotalbookingsnum.setText(total     != null ? total.toString()     : "0");
-    summarycompletednum.setText    (completed != null ? completed.toString() : "0");
-    summaryinprogressnum.setText   (progress  != null ? progress.toString()  : "0");
-    summarypendingnum.setText      (pending   != null ? pending.toString()   : "0");
-    summarycancellednum.setText    (cancelled != null ? cancelled.toString() : "0");
-    summaryrevenuenum.setText      ("₱" + (revenue != null ? revenue.toString() : "0"));
-}
-
-private void loadTopCleaners() {
-    config conf = new config();
-    // Query top 5 employees by number of completed bookings
-    String sql = "SELECT b_employee, COUNT(*) as cnt FROM tbl_bookings " +
-                 "WHERE b_status = 'Done' GROUP BY b_employee ORDER BY cnt DESC LIMIT 5";
-    java.util.List<String[]> rows = new java.util.ArrayList<>();
-    try (java.sql.Connection conn = config.connectDB();
-         java.sql.PreparedStatement ps = conn.prepareStatement(sql);
-         java.sql.ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            rows.add(new String[]{ rs.getString("b_employee"), rs.getString("cnt") });
-        }
-    } catch (java.sql.SQLException e) {
-        System.out.println("Top cleaners error: " + e.getMessage());
+    /**
+     * Creates new form Reports
+     */
+    public Reports() {
+        initComponents();
     }
 
-    javax.swing.JLabel[] names = { firstname, secondname, thirdname, fourthname, fifthname };
-    javax.swing.JLabel[] counts = { firstnamenumoftask, secondnamenumoftask, thirdnamenumoftask, fourthnamenumoftask, fifthnamenumoftask };
-
-    for (int i = 0; i < 5; i++) {
-        if (i < rows.size()) {
-            names[i].setText(rows.get(i)[0]);
-            counts[i].setText(rows.get(i)[1] + " jobs");
-        } else {
-            names[i].setText("—");
-            counts[i].setText("—");
-        }
-    }
-}
-
-// ── Placeholder helper for date fields ───────────────────────────────────
-private void setPlaceholder(javax.swing.JTextField field, String placeholder) {
-    field.setText(placeholder);
-    field.setForeground(java.awt.Color.GRAY);
-    field.addFocusListener(new java.awt.event.FocusAdapter() {
-        public void focusGained(java.awt.event.FocusEvent e) {
-            if (field.getText().equals(placeholder)) {
-                field.setText("");
-                field.setForeground(java.awt.Color.WHITE);
-            }
-        }
-        public void focusLost(java.awt.event.FocusEvent e) {
-            if (field.getText().isEmpty()) {
-                field.setText(placeholder);
-                field.setForeground(java.awt.Color.GRAY);
-            }
-        }
-    });
-}
-
-// ── Generate button ───────────────────────────────────────────────────────
-private void generateReport() {
-    String type     = reporttypecombobox.getSelectedItem() != null
-                      ? reporttypecombobox.getSelectedItem().toString() : "All Bookings";
-    String dateFrom = datefromfield.getText().trim();
-    String dateTo   = datetofield.getText().trim();
-
-    // Ignore placeholder text
-    boolean hasDateFilter = !dateFrom.isEmpty() && !dateFrom.equals("YYYY-MM-DD")
-                         && !dateTo.isEmpty()   && !dateTo.equals("YYYY-MM-DD");
-    String whereDate = hasDateFilter
-        ? " AND b_date BETWEEN '" + dateFrom + "' AND '" + dateTo + "'"
-        : "";
-
-    String sql;
-    switch (type) {
-        case "Completed Only":
-            sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                  "b_employee AS 'Cleaner', b_date AS 'Date', b_price AS 'Price', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_status = 'Done'" + whereDate + " ORDER BY b_date DESC";
-            break;
-        case "Pending Only":
-            sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                  "b_employee AS 'Cleaner', b_date AS 'Date', b_price AS 'Price', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_status = 'Pending'" + whereDate + " ORDER BY b_date DESC";
-            break;
-        case "Cancelled Only":
-            sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                  "b_employee AS 'Cleaner', b_date AS 'Date', b_price AS 'Price', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_status = 'Cancelled'" + whereDate + " ORDER BY b_date DESC";
-            break;
-        case "In Progress Only":
-            sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                  "b_employee AS 'Cleaner', b_date AS 'Date', b_price AS 'Price', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_status = 'In Progress'" + whereDate + " ORDER BY b_date DESC";
-            break;
-        case "By Cleaner":
-            sql = "SELECT b_employee AS 'Cleaner', " +
-                  "COUNT(*) AS 'Total Jobs', " +
-                  "SUM(CASE WHEN b_status='Done' THEN 1 ELSE 0 END) AS 'Completed', " +
-                  "SUM(CASE WHEN b_status='Cancelled' THEN 1 ELSE 0 END) AS 'Cancelled', " +
-                  "SUM(CASE WHEN b_status='Done' THEN b_price ELSE 0 END) AS 'Revenue' " +
-                  "FROM tbl_bookings WHERE 1=1" + whereDate +
-                  " GROUP BY b_employee ORDER BY Revenue DESC";
-            break;
-        case "By Service":
-            sql = "SELECT b_service AS 'Service', " +
-                  "COUNT(*) AS 'Total Bookings', " +
-                  "SUM(CASE WHEN b_status='Done' THEN 1 ELSE 0 END) AS 'Completed', " +
-                  "SUM(CASE WHEN b_status='Done' THEN b_price ELSE 0 END) AS 'Revenue' " +
-                  "FROM tbl_bookings WHERE 1=1" + whereDate +
-                  " GROUP BY b_service ORDER BY Revenue DESC";
-            break;
-        case "Revenue Summary":
-            sql = "SELECT b_date AS 'Date', " +
-                  "COUNT(*) AS 'Bookings', " +
-                  "SUM(CASE WHEN b_status='Done' THEN b_price ELSE 0 END) AS 'Revenue', " +
-                  "SUM(CASE WHEN b_status='Done' THEN 1 ELSE 0 END) AS 'Completed', " +
-                  "SUM(CASE WHEN b_status='Pending' THEN 1 ELSE 0 END) AS 'Pending' " +
-                  "FROM tbl_bookings WHERE 1=1" + whereDate +
-                  " GROUP BY b_date ORDER BY b_date DESC";
-            break;
-        default: // All Bookings
-            sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                  "b_employee AS 'Cleaner', b_date AS 'Date', b_price AS 'Price', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE 1=1" + whereDate + " ORDER BY b_date DESC";
-    }
-    new config().displayData(sql, TableRecentType);
-}
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -300,7 +126,6 @@ private void generateReport() {
         administrator = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel4.setBackground(new java.awt.Color(28, 69, 91));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -888,7 +713,26 @@ private void generateReport() {
 
         jPanel4.add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 150, -1));
 
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 790, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 490, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
 
         pack();
         setLocationRelativeTo(null);
@@ -899,105 +743,92 @@ private void generateReport() {
     }//GEN-LAST:event_border3MouseClicked
 
     private void exit1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exit1MouseClicked
- int c = JOptionPane.showConfirmDialog(this, "Log out?", "Log Out", JOptionPane.YES_NO_OPTION);
-    if (c == JOptionPane.YES_OPTION) { Session.getInstance().logout(); new LoginForm().setVisible(true); this.dispose(); }
-
+        // TODO add your handling code here:
     }//GEN-LAST:event_exit1MouseClicked
 
     private void datefromfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_datefromfieldActionPerformed
-        generateReport();
+        // TODO add your handling code here:
     }//GEN-LAST:event_datefromfieldActionPerformed
 
     private void border2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_border2MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_border2MouseClicked
 
+    private void generatepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generatepanelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generatepanelMouseClicked
+
     private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_reporttypecomboboxActionPerformed
 
     private void datetofieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_datetofieldActionPerformed
-        generateReport();
+        // TODO add your handling code here:
     }//GEN-LAST:event_datetofieldActionPerformed
 
-    private void generatepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generatepanelMouseClicked
-  generateReport();
-    }//GEN-LAST:event_generatepanelMouseClicked
-
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        Profile a = new Profile();
-        a.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_settingsMouseClicked
 
     private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        AdminDash a = new AdminDash();
-        a.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_dashpanelMouseClicked
 
     private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
-        // Open List of Users
-        Users lou = new Users();
-        lou.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_userpanelMouseClicked
 
     private void employeepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeepanelMouseClicked
-        Employee e = new Employee();
-        e.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_employeepanelMouseClicked
 
     private void servicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_servicespanelMouseClicked
-        Services s = new Services();
-        s.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_servicespanelMouseClicked
 
     private void bookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingspanelMouseClicked
-        Bookings b = new Bookings();
-        b.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_bookingspanelMouseClicked
 
     private void reportspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportspanelMouseClicked
-        Reports r = new Reports();
-        r.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_reportspanelMouseClicked
 
     private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        Feedback f = new Feedback();
-        f.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_feedbackpanelMouseClicked
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Session session = Session.getInstance();
-
-        if (!session.isLoggedIn()) {
-
-            JOptionPane.showMessageDialog(null,
-                    "Please login first!",
-                    "Unauthorized Access",
-                    JOptionPane.WARNING_MESSAGE);
-
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    new LoginForm().setVisible(true);
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-            });
-
-            return;
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Reports.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Reports.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Reports.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Reports.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
 
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminDash().setVisible(true);
+                new Reports().setVisible(true);
             }
         });
     }

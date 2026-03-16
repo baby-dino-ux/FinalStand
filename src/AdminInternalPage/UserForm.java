@@ -282,7 +282,7 @@ public class UserForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        // FIX 5: Removed dead `firstnamefield` — fnamefield is the real first-name field.
+        firstnamefield = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         label1 = new javax.swing.JLabel();
@@ -296,21 +296,25 @@ public class UserForm extends javax.swing.JFrame {
         lastname = new javax.swing.JLabel();
         email = new javax.swing.JLabel();
         fnamefield = new javax.swing.JTextField();
-        // FIX 4: passwordfield is now a JPasswordField so input is masked
-        passwordfield = new javax.swing.JPasswordField();
+        passwordfield = new javax.swing.JTextField();
         password = new javax.swing.JLabel();
-        // FIX 6: Removed duplicate password1 label (was overlapping password at same coords)
+        emailfield = new javax.swing.JTextField();
+        password1 = new javax.swing.JLabel();
         useername = new javax.swing.JLabel();
         usernamefield = new javax.swing.JTextField();
         idfield1 = new javax.swing.JTextField();
-        emailfield = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         image = new javax.swing.JLabel();
         image1 = new javax.swing.JLabel();
         addimagepanel = new javax.swing.JPanel();
         addimage = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        firstnamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        firstnamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        firstnamefield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
+        firstnamefield.setOpaque(false);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(29, 45, 61));
@@ -401,32 +405,31 @@ public class UserForm extends javax.swing.JFrame {
         fnamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         fnamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         fnamefield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
-        fnamefield.setEnabled(true);
+        fnamefield.setEnabled(false);
         fnamefield.setOpaque(false);
         jPanel1.add(fnamefield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, 210, 30));
 
-        // FIX 4: passwordfield is now a JPasswordField (replaces plain JTextField)
         passwordfield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         passwordfield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
         passwordfield.setOpaque(false);
         jPanel1.add(passwordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 360, 210, 30));
 
-        password.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
+        password.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         password.setForeground(new java.awt.Color(239, 234, 234));
         password.setText("Password:");
         jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 90, 30));
 
-        // FIX 1: emailfield is read-only — styled with a dimmed foreground to signal it
         emailfield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         emailfield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         emailfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
-        emailfield.setEditable(false);
-        emailfield.setEnabled(false);
-        emailfield.setForeground(new java.awt.Color(180, 180, 180)); // dimmed to signal read-only
-        emailfield.setToolTipText("Email address cannot be changed.");
         emailfield.setOpaque(false);
         jPanel1.add(emailfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 250, 210, 30));
+
+        password1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        password1.setForeground(new java.awt.Color(239, 234, 234));
+        password1.setText("Password:");
+        jPanel1.add(password1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 90, 30));
 
         useername.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         useername.setForeground(new java.awt.Color(239, 234, 234));
@@ -557,9 +560,8 @@ public class UserForm extends javax.swing.JFrame {
     private javax.swing.JLabel ex;
     private javax.swing.JLabel exit;
     private javax.swing.JLabel firstname;
-    // FIX 5: firstnamefield removed — it was declared/instantiated but never used.
-    //        fnamefield (below) is the real first-name input field.
-    private javax.swing.JTextField fnamefield;
+    public javax.swing.JTextField firstnamefield;
+    public javax.swing.JTextField fnamefield;
     private javax.swing.JLabel id;
     public javax.swing.JTextField idfield1;
     public javax.swing.JLabel image;
@@ -571,8 +573,8 @@ public class UserForm extends javax.swing.JFrame {
     private javax.swing.JLabel lastname;
     public javax.swing.JTextField lastnamefield;
     private javax.swing.JLabel password;
-    // FIX 6: password1 removed — it overlapped password at identical coordinates (20, 360).
-    public javax.swing.JPasswordField passwordfield; // FIX 4: was JTextField
+    private javax.swing.JLabel password1;
+    public javax.swing.JTextField passwordfield;
     public javax.swing.JLabel st_label;
     private javax.swing.JLabel useername;
     public javax.swing.JTextField usernamefield;

@@ -9,7 +9,7 @@ import Staff.StaffDash;
 import config.config;
 import javax.swing.JOptionPane;
 import Session.Session;
-import session.UserData;
+import Session.UserData;
 
 
 public class LoginForm extends javax.swing.JFrame {

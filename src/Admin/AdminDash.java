@@ -1,153 +1,37 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package Admin;
 
-import AdminInternalPage.Profile;
-import Admin.Users;
-import Admin.Employee;
-import Admin.Services;
-import Admin.Bookings;
-import Admin.Reports;
-import Staff.Feedback;
-import LoginandRegister.LoginForm;
-import Session.Session;
-import javax.swing.JOptionPane;
-import config.config;
-
+/**
+ *
+ * @author ashlaran
+ */
 public class AdminDash extends javax.swing.JFrame {
 
-    private String loggedInUsername;
-
-    // ── Constructor ───────────────────────────────────────────────────────────
+    /**
+     * Creates new form AdminDash
+     */
     public AdminDash() {
         initComponents();
-        this.loggedInUsername = "Admin";
-        loadSessionInfo();
-        loadDashboard();
-        setupCombobox();
     }
 
     public AdminDash(String username) {
-        initComponents();
-        this.loggedInUsername = username;
-        loadSessionInfo();
-        loadDashboard();
-        setupCombobox();
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    // ── Wire the combobox after initComponents runs ───────────────────────────
-    private void setupCombobox() {
-        reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
-            "All Bookings",
-            "Pending Only",
-            "In Progress Only",
-            "Done Only",
-            "Cancelled Only"
-        }));
-        reporttypecombobox.addActionListener(e -> filterRecentBookings());
-    }
-
-    // ── Session label ─────────────────────────────────────────────────────────
-    private void loadSessionInfo() {
-        Session session = Session.getInstance();
-        if (session.isLoggedIn()) {
-            lblUsername.setText(session.getFullName());
-        } else {
-            lblUsername.setText("ADMIN");
-        }
-    }
-
-    // ── Load all stat cards and tables ────────────────────────────────────────
-    private void loadDashboard() {
-        config conf = new config();
-        try {
-            Object usersCount = conf.getValue("SELECT COUNT(*) FROM tbl_users WHERE type != 'Admin'");
-            totalusersnum.setText(usersCount != null ? usersCount.toString() : "0");
-
-            Object empCount = conf.getValue("SELECT COUNT(*) FROM tbl_users WHERE type = 'Employee'");
-            totalemployeesnum.setText(empCount != null ? empCount.toString() : "0");
-
-            Object bookCount = conf.getValue("SELECT COUNT(*) FROM tbl_bookings");
-            totalbookingsnum.setText(bookCount != null ? bookCount.toString() : "0");
-
-            Object pendCount = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_status = 'Pending'");
-            totalpendingnum.setText(pendCount != null ? pendCount.toString() : "0");
-
-            Object svcCount = conf.getValue("SELECT COUNT(*) FROM tbl_services");
-            totalservicesnum.setText(svcCount != null ? svcCount.toString() : "0");
-
-            conf.displayData(
-                "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', "
-                + "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' "
-                + "FROM tbl_bookings ORDER BY b_id DESC LIMIT 10",
-                TableRecentBookings);
-
-            conf.displayData(
-                "SELECT (firstname||' '||lastname) AS 'Name', work_status AS 'Work Status' "
-                + "FROM tbl_users WHERE type = 'Employee' ORDER BY work_status ASC",
-                TableEmployeeStatus);
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Dashboard Load Error: " + e.getMessage());
-        }
-    }
-
-    // ── Filter Recent Bookings table by combobox selection ────────────────────
-    private void filterRecentBookings() {
-        String selected = reporttypecombobox.getSelectedItem() != null
-                          ? reporttypecombobox.getSelectedItem().toString() : "All Bookings";
-        String sql;
-        switch (selected) {
-            case "Pending Only":
-                sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                      "FROM tbl_bookings WHERE b_status = 'Pending' ORDER BY b_id DESC LIMIT 10";
-                break;
-            case "In Progress Only":
-                sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                      "FROM tbl_bookings WHERE b_status = 'In Progress' ORDER BY b_id DESC LIMIT 10";
-                break;
-            case "Done Only":
-                sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                      "FROM tbl_bookings WHERE b_status = 'Done' ORDER BY b_id DESC LIMIT 10";
-                break;
-            case "Cancelled Only":
-                sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                      "FROM tbl_bookings WHERE b_status = 'Cancelled' ORDER BY b_id DESC LIMIT 10";
-                break;
-            default: // All Bookings
-                sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
-                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                      "FROM tbl_bookings ORDER BY b_id DESC LIMIT 10";
-                break;
-        }
-        new config().displayData(sql, TableRecentBookings);
-    }
-
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        listadmin = new javax.swing.JPanel();
-        settings = new javax.swing.JLabel();
-        lblUsername = new javax.swing.JLabel();
-        dashpanel = new javax.swing.JPanel();
-        dashboard1 = new javax.swing.JLabel();
-        userpanel = new javax.swing.JPanel();
-        users = new javax.swing.JLabel();
-        employeepanel = new javax.swing.JPanel();
-        employee = new javax.swing.JLabel();
-        servicespanel = new javax.swing.JPanel();
-        services = new javax.swing.JLabel();
-        bookingspanel = new javax.swing.JPanel();
-        bookings = new javax.swing.JLabel();
-        reportspanel = new javax.swing.JPanel();
-        reports = new javax.swing.JLabel();
-        feedbackpanel = new javax.swing.JPanel();
-        review = new javax.swing.JLabel();
-        feedback = new javax.swing.JLabel();
-        administrator = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lg = new javax.swing.JLabel();
@@ -188,144 +72,30 @@ public class AdminDash extends javax.swing.JFrame {
         border2 = new javax.swing.JPanel();
         border3 = new javax.swing.JPanel();
         reporttypecombobox = new javax.swing.JComboBox<>();
+        listadmin = new javax.swing.JPanel();
+        settings = new javax.swing.JLabel();
+        lblUsername = new javax.swing.JLabel();
+        dashpanel = new javax.swing.JPanel();
+        dashboard1 = new javax.swing.JLabel();
+        userpanel = new javax.swing.JPanel();
+        users = new javax.swing.JLabel();
+        employeepanel = new javax.swing.JPanel();
+        employee = new javax.swing.JLabel();
+        servicespanel = new javax.swing.JPanel();
+        services = new javax.swing.JLabel();
+        bookingspanel = new javax.swing.JPanel();
+        bookings = new javax.swing.JLabel();
+        reportspanel = new javax.swing.JPanel();
+        reports = new javax.swing.JLabel();
+        feedbackpanel = new javax.swing.JPanel();
+        review = new javax.swing.JLabel();
+        feedback = new javax.swing.JLabel();
+        administrator = new javax.swing.JLabel();
+
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        listadmin.setBackground(new java.awt.Color(55, 86, 93));
-        listadmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        settings.setBackground(new java.awt.Color(255, 255, 255));
-        settings.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user (1).png"))); // NOI18N
-        settings.setText("ACCOUNT");
-        settings.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                settingsMouseClicked(evt);
-            }
-        });
-        listadmin.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 10, 280, 50));
-
-        lblUsername.setBackground(new java.awt.Color(153, 255, 255));
-        lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
-        lblUsername.setText("Admin");
-        listadmin.add(lblUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 90, 20));
-
-        dashpanel.setBackground(new java.awt.Color(29, 45, 61));
-        dashpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dashpanelMouseClicked(evt);
-            }
-        });
-        dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        dashboard1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        dashboard1.setForeground(new java.awt.Color(239, 234, 234));
-        dashboard1.setText("Dashboard");
-        dashpanel.add(dashboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, 20));
-
-        listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 150, 40));
-
-        userpanel.setBackground(new java.awt.Color(29, 45, 61));
-        userpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                userpanelMouseClicked(evt);
-            }
-        });
-        userpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        users.setBackground(new java.awt.Color(29, 45, 61));
-        users.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        users.setForeground(new java.awt.Color(239, 234, 234));
-        users.setText("Users");
-        userpanel.add(users, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, -1));
-
-        listadmin.add(userpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 150, 40));
-
-        employeepanel.setBackground(new java.awt.Color(29, 45, 61));
-        employeepanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                employeepanelMouseClicked(evt);
-            }
-        });
-        employeepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        employee.setBackground(new java.awt.Color(212, 226, 240));
-        employee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        employee.setForeground(new java.awt.Color(239, 234, 234));
-        employee.setText("Employee");
-        employeepanel.add(employee, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
-
-        listadmin.add(employeepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 150, 40));
-
-        servicespanel.setBackground(new java.awt.Color(29, 45, 61));
-        servicespanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                servicespanelMouseClicked(evt);
-            }
-        });
-        servicespanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        services.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        services.setForeground(new java.awt.Color(239, 234, 234));
-        services.setText("Services");
-        servicespanel.add(services, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 110, -1));
-
-        listadmin.add(servicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
-
-        bookingspanel.setBackground(new java.awt.Color(29, 45, 61));
-        bookingspanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                bookingspanelMouseClicked(evt);
-            }
-        });
-        bookingspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        bookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        bookings.setForeground(new java.awt.Color(239, 234, 234));
-        bookings.setText("Bookings");
-        bookingspanel.add(bookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 60, -1));
-
-        listadmin.add(bookingspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 150, 40));
-
-        reportspanel.setBackground(new java.awt.Color(29, 45, 61));
-        reportspanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                reportspanelMouseClicked(evt);
-            }
-        });
-        reportspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        reports.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        reports.setForeground(new java.awt.Color(239, 234, 234));
-        reports.setText("Reports");
-        reportspanel.add(reports, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
-
-        listadmin.add(reportspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 150, 40));
-
-        feedbackpanel.setBackground(new java.awt.Color(29, 45, 61));
-        feedbackpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                feedbackpanelMouseClicked(evt);
-            }
-        });
-        feedbackpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        review.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        feedbackpanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
-
-        feedback.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        feedback.setForeground(new java.awt.Color(239, 234, 234));
-        feedback.setText("Feedback");
-        feedbackpanel.add(feedback, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 80, -1));
-
-        listadmin.add(feedbackpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 150, 40));
-
-        administrator.setBackground(new java.awt.Color(153, 255, 255));
-        administrator.setFont(new java.awt.Font("Century Gothic", 1, 10)); // NOI18N
-        administrator.setForeground(new java.awt.Color(153, 255, 255));
-        administrator.setText("ADMINISTRATOR");
-        listadmin.add(administrator, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, 90, 20));
 
         jPanel4.setBackground(new java.awt.Color(28, 69, 91));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -502,9 +272,9 @@ public class AdminDash extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class,
-                java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
+
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
@@ -537,6 +307,7 @@ public class AdminDash extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Object.class
             };
+
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
@@ -581,6 +352,141 @@ public class AdminDash extends javax.swing.JFrame {
         });
         jPanel4.add(reporttypecombobox, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 160, 100, -1));
 
+        listadmin.setBackground(new java.awt.Color(55, 86, 93));
+        listadmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        settings.setBackground(new java.awt.Color(255, 255, 255));
+        settings.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user (1).png"))); // NOI18N
+        settings.setText("ACCOUNT");
+        settings.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                settingsMouseClicked(evt);
+            }
+        });
+        listadmin.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 10, 280, 50));
+
+        lblUsername.setBackground(new java.awt.Color(153, 255, 255));
+        lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        lblUsername.setText("Admin");
+        listadmin.add(lblUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 90, 20));
+
+        dashpanel.setBackground(new java.awt.Color(29, 45, 61));
+        dashpanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashpanelMouseClicked(evt);
+            }
+        });
+        dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboard1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        dashboard1.setForeground(new java.awt.Color(239, 234, 234));
+        dashboard1.setText("Dashboard");
+        dashpanel.add(dashboard1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, 20));
+
+        listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 150, 40));
+
+        userpanel.setBackground(new java.awt.Color(29, 45, 61));
+        userpanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                userpanelMouseClicked(evt);
+            }
+        });
+        userpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        users.setBackground(new java.awt.Color(29, 45, 61));
+        users.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        users.setForeground(new java.awt.Color(239, 234, 234));
+        users.setText("Users");
+        userpanel.add(users, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 70, -1));
+
+        listadmin.add(userpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 150, 40));
+
+        employeepanel.setBackground(new java.awt.Color(29, 45, 61));
+        employeepanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                employeepanelMouseClicked(evt);
+            }
+        });
+        employeepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        employee.setBackground(new java.awt.Color(212, 226, 240));
+        employee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        employee.setForeground(new java.awt.Color(239, 234, 234));
+        employee.setText("Employee");
+        employeepanel.add(employee, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
+        listadmin.add(employeepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 150, 40));
+
+        servicespanel.setBackground(new java.awt.Color(29, 45, 61));
+        servicespanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                servicespanelMouseClicked(evt);
+            }
+        });
+        servicespanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        services.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        services.setForeground(new java.awt.Color(239, 234, 234));
+        services.setText("Services");
+        servicespanel.add(services, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 110, -1));
+
+        listadmin.add(servicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
+
+        bookingspanel.setBackground(new java.awt.Color(29, 45, 61));
+        bookingspanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bookingspanelMouseClicked(evt);
+            }
+        });
+        bookingspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        bookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        bookings.setForeground(new java.awt.Color(239, 234, 234));
+        bookings.setText("Bookings");
+        bookingspanel.add(bookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 60, -1));
+
+        listadmin.add(bookingspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 150, 40));
+
+        reportspanel.setBackground(new java.awt.Color(29, 45, 61));
+        reportspanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportspanelMouseClicked(evt);
+            }
+        });
+        reportspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        reports.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        reports.setForeground(new java.awt.Color(239, 234, 234));
+        reports.setText("Reports");
+        reportspanel.add(reports, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
+
+        listadmin.add(reportspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 150, 40));
+
+        feedbackpanel.setBackground(new java.awt.Color(29, 45, 61));
+        feedbackpanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseClicked(evt);
+            }
+        });
+        feedbackpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        review.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        feedbackpanel.add(review, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, -1));
+
+        feedback.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        feedback.setForeground(new java.awt.Color(239, 234, 234));
+        feedback.setText("Feedback");
+        feedbackpanel.add(feedback, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 80, -1));
+
+        listadmin.add(feedbackpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 150, 40));
+
+        administrator.setBackground(new java.awt.Color(153, 255, 255));
+        administrator.setFont(new java.awt.Font("Century Gothic", 1, 10)); // NOI18N
+        administrator.setForeground(new java.awt.Color(153, 255, 255));
+        administrator.setText("ADMINISTRATOR");
+        listadmin.add(administrator, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, 90, 20));
+
         jPanel4.add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 150, -1));
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
@@ -589,76 +495,87 @@ public class AdminDash extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    // ── Event handlers ────────────────────────────────────────────────────────
-    private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
-        new Users().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_userpanelMouseClicked
-
-    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        new Profile().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_settingsMouseClicked
-
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to log out?", "Log Out", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            Session.getInstance().logout();
-            new LoginForm().setVisible(true);
-            this.dispose();
-        }
+        // TODO add your handling code here:
     }//GEN-LAST:event_exitMouseClicked
 
-    private void bookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingspanelMouseClicked
-        new Bookings().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_bookingspanelMouseClicked
-
     private void border2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_border2MouseClicked
+        // TODO add your handling code here:
     }//GEN-LAST:event_border2MouseClicked
 
     private void border3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_border3MouseClicked
+        // TODO add your handling code here:
     }//GEN-LAST:event_border3MouseClicked
 
+    private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_reporttypecomboboxActionPerformed
+
+    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_settingsMouseClicked
+
     private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        new AdminDash().setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_dashpanelMouseClicked
 
+    private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_userpanelMouseClicked
+
     private void employeepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeepanelMouseClicked
-        new Employee().setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_employeepanelMouseClicked
 
     private void servicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_servicespanelMouseClicked
-        new Services().setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_servicespanelMouseClicked
 
+    private void bookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingspanelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bookingspanelMouseClicked
+
     private void reportspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportspanelMouseClicked
-        new Reports().setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_reportspanelMouseClicked
 
     private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        new Feedback().setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_feedbackpanelMouseClicked
 
-    private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
-        filterRecentBookings();
-    }//GEN-LAST:event_reporttypecomboboxActionPerformed
-
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
-        Session session = Session.getInstance();
-        if (!session.isLoggedIn()) {
-            JOptionPane.showMessageDialog(null, "Please login first!",
-                "Unauthorized Access", JOptionPane.WARNING_MESSAGE);
-            java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
-            return;
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        java.awt.EventQueue.invokeLater(() -> new AdminDash().setVisible(true));
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AdminDash().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -681,6 +598,7 @@ public class AdminDash extends javax.swing.JFrame {
     private javax.swing.JLabel feedback;
     private javax.swing.JPanel feedbackpanel;
     private javax.swing.JPanel green;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;

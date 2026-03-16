@@ -356,6 +356,7 @@ public class MyTasks extends javax.swing.JFrame {
         jPanel4.add(red, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 100, 80, 20));
 
         border.setBackground(new java.awt.Color(153, 255, 255));
+        border.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         border.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 borderMouseClicked(evt);
@@ -391,10 +392,12 @@ public class MyTasks extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class,
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
-            public Class getColumnClass(int columnIndex) { return types [columnIndex]; }
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
         });
         mytasksscrollpane.setViewportView(TableMytask);
 

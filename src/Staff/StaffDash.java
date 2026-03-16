@@ -610,7 +610,7 @@ public class StaffDash extends javax.swing.JFrame {
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        // servicepanel intentionally NOT added to listadmin — it was blocking availableemployeerpanel
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         lblUsername.setBackground(new java.awt.Color(153, 255, 255));
         lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N

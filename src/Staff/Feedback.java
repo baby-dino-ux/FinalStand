@@ -108,13 +108,13 @@ public class Feedback extends javax.swing.JFrame {
         name2 = new javax.swing.JLabel();
         border1 = new javax.swing.JPanel();
         border2 = new javax.swing.JPanel();
+        searchfield = new javax.swing.JTextField();
         border = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         mybookingscrollpane = new javax.swing.JScrollPane();
         TableMyBooking = new javax.swing.JTable();
         updatepanel = new javax.swing.JPanel();
         update = new javax.swing.JLabel();
-        searchfield = new javax.swing.JTextField();
         reporttypecombobox = new javax.swing.JComboBox<>();
         listadmin = new javax.swing.JPanel();
         settings = new javax.swing.JLabel();
@@ -141,14 +141,15 @@ public class Feedback extends javax.swing.JFrame {
         createbooking6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel4.setBackground(new java.awt.Color(28, 69, 91));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelbottom.setBackground(new java.awt.Color(29, 45, 61));
         panelbottom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { panelbottomMouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelbottomMouseClicked(evt);
+            }
         });
         panelbottom.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(panelbottom, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, -1, 290));
@@ -163,7 +164,9 @@ public class Feedback extends javax.swing.JFrame {
 
         exit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/logout (2).png"))); // NOI18N
         exit.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { exitMouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitMouseClicked(evt);
+            }
         });
         jPanel1.add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, 30, 20));
 
@@ -176,7 +179,9 @@ public class Feedback extends javax.swing.JFrame {
 
         border1.setBackground(new java.awt.Color(29, 45, 61));
         border1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { border1MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                border1MouseClicked(evt);
+            }
         });
         border1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(border1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 130, 180));
@@ -184,19 +189,31 @@ public class Feedback extends javax.swing.JFrame {
         border2.setBackground(new java.awt.Color(153, 255, 255));
         border2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         border2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { border2MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                border2MouseClicked(evt);
+            }
         });
         border2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(border2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 650, 10));
 
+        searchfield.setFont(new java.awt.Font("Bahnschrift", 0, 11)); // NOI18N
+        searchfield.setText("Search ");
+        searchfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchfieldActionPerformed(evt);
+            }
+        });
+        jPanel4.add(searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 340, 20));
+
         border.setBackground(new java.awt.Color(153, 255, 255));
         border.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { borderMouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                borderMouseClicked(evt);
+            }
         });
         border.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(border, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 10, 490));
 
-        // ── Content panel ─────────────────────────────────────────────────────
         jPanel2.setBackground(new java.awt.Color(29, 45, 61));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -204,62 +221,64 @@ public class Feedback extends javax.swing.JFrame {
         TableMyBooking.setBackground(new java.awt.Color(29, 45, 61));
         TableMyBooking.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TableMyBooking.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
-        TableMyBooking.setForeground(new java.awt.Color(255, 255, 255));
         TableMyBooking.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Booking ID", "Customer", "Employee", "Service", "Date", "Status"
+                "Booking ID", "Customer Name", "Service", "Assign Cleaner", "Booking Date", "Status", "Rate"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class,
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
-            public Class getColumnClass(int columnIndex) { return types[columnIndex]; }
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
         });
         TableMyBooking.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         mybookingscrollpane.setViewportView(TableMyBooking);
-        jPanel2.add(mybookingscrollpane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 610, 320));
 
-        searchfield.setFont(new java.awt.Font("Bahnschrift", 0, 11)); // NOI18N
-        searchfield.setText("Search ");
-        searchfield.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) { searchfieldActionPerformed(evt); }
-        });
-        jPanel2.add(searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 340, -1));
-
-        reporttypecombobox.setBackground(new java.awt.Color(29, 45, 61));
-        reporttypecombobox.setFont(new java.awt.Font("Bahnschrift", 0, 12)); // NOI18N
-        reporttypecombobox.setForeground(new java.awt.Color(29, 45, 61));
-        reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Completed", "Already Rated", "Not Yet Rated" }));
-        reporttypecombobox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) { reporttypecomboboxActionPerformed(evt); }
-        });
-        jPanel2.add(reporttypecombobox, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 20, 140, 20));
+        jPanel2.add(mybookingscrollpane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 610, 340));
 
         updatepanel.setBackground(new java.awt.Color(153, 255, 255));
         updatepanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         updatepanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { updatepanelMouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updatepanelMouseClicked(evt);
+            }
         });
         updatepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         update.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         update.setForeground(new java.awt.Color(51, 51, 51));
         update.setText("RATE");
         update.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) { updateMouseEntered(evt); }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                updateMouseEntered(evt);
+            }
         });
-        updatepanel.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 50, 20));
-        jPanel2.add(updatepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, 60, -1));
+        updatepanel.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 40, 20));
 
-        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 110, 630, 370));
+        jPanel2.add(updatepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 20, 70, -1));
 
-        // ── Sidebar — IDENTICAL to MyBookings ────────────────────────────────
+        reporttypecombobox.setBackground(new java.awt.Color(29, 45, 61));
+        reporttypecombobox.setFont(new java.awt.Font("Bahnschrift", 0, 12)); // NOI18N
+        reporttypecombobox.setForeground(new java.awt.Color(29, 45, 61));
+        reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        reporttypecombobox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reporttypecomboboxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(reporttypecombobox, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, 100, 20));
+
+        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 630, 400));
+
         listadmin.setBackground(new java.awt.Color(55, 86, 93));
         listadmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -268,82 +287,123 @@ public class Feedback extends javax.swing.JFrame {
         settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user (1).png"))); // NOI18N
         settings.setText("ACCOUNT");
         settings.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { settingsMouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                settingsMouseClicked(evt);
+            }
         });
         listadmin.add(settings, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 10, 290, 50));
 
         dashpanel.setBackground(new java.awt.Color(29, 45, 61));
         dashpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { dashpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { dashpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { dashpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dashpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                dashpanelMouseExited(evt);
+            }
         });
         dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         dashboard.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         dashboard.setForeground(new java.awt.Color(239, 234, 234));
         dashboard.setText("Dashboard");
         dashboard.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) { dashboardMouseEntered(evt); }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dashboardMouseEntered(evt);
+            }
         });
         dashpanel.add(dashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 80, 20));
+
         listadmin.add(dashpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 130, 40));
 
         availableemployeerpanel.setBackground(new java.awt.Color(29, 45, 61));
         availableemployeerpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { availableemployeerpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { availableemployeerpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { availableemployeerpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseExited(evt);
+            }
         });
         availableemployeerpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         availableemployee.setBackground(new java.awt.Color(29, 45, 61));
         availableemployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         availableemployee.setForeground(new java.awt.Color(239, 234, 234));
         availableemployee.setText("Av. Employee");
         availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel3MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel3MouseClicked(evt);
+            }
         });
         createbookingpanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         createbooking3.setBackground(new java.awt.Color(29, 45, 61));
         createbooking3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking3.setForeground(new java.awt.Color(239, 234, 234));
         createbooking3.setText("Create Booking");
         createbookingpanel3.add(createbooking3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
         availableemployeerpanel.add(createbookingpanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
+
         listadmin.add(availableemployeerpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 130, 40));
 
         viewservicespanel.setBackground(new java.awt.Color(29, 45, 61));
         viewservicespanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { viewservicespanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { viewservicespanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { viewservicespanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseExited(evt);
+            }
         });
         viewservicespanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         viewservices.setBackground(new java.awt.Color(29, 45, 61));
         viewservices.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         viewservices.setForeground(new java.awt.Color(239, 234, 234));
         viewservices.setText("View Services");
         viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+
         listadmin.add(viewservicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 130, 40));
 
         createbookingpanel.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { createbookingpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { createbookingpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseExited(evt);
+            }
         });
         createbookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         createbooking.setBackground(new java.awt.Color(29, 45, 61));
         createbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking.setForeground(new java.awt.Color(239, 234, 234));
         createbooking.setText("Create Booking");
         createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 130, 40));
 
-        // servicepanel intentionally NOT added to listadmin — it was blocking availableemployeerpanel
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         lblUsername.setBackground(new java.awt.Color(153, 255, 255));
         lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
@@ -358,57 +418,102 @@ public class Feedback extends javax.swing.JFrame {
 
         mybookingspanel.setBackground(new java.awt.Color(29, 45, 61));
         mybookingspanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { mybookingspanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { mybookingspanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { mybookingspanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseExited(evt);
+            }
         });
         mybookingspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         mybookings.setBackground(new java.awt.Color(29, 45, 61));
         mybookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         mybookings.setForeground(new java.awt.Color(239, 234, 234));
         mybookings.setText("My Bookings");
         mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel5MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel5MouseClicked(evt);
+            }
         });
         createbookingpanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         createbooking5.setBackground(new java.awt.Color(29, 45, 61));
         createbooking5.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking5.setForeground(new java.awt.Color(239, 234, 234));
         createbooking5.setText("Create Booking");
         createbookingpanel5.add(createbooking5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
         mybookingspanel.add(createbookingpanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
+
         listadmin.add(mybookingspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 130, 40));
 
         feedbackpanel.setBackground(new java.awt.Color(29, 45, 61));
         feedbackpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { feedbackpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { feedbackpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { feedbackpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseExited(evt);
+            }
         });
         feedbackpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         feedback.setBackground(new java.awt.Color(29, 45, 61));
         feedback.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         feedback.setForeground(new java.awt.Color(239, 234, 234));
         feedback.setText("Feedback");
         feedbackpanel.add(feedback, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+
         createbookingpanel6.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel6MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel6MouseClicked(evt);
+            }
         });
         createbookingpanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         createbooking6.setBackground(new java.awt.Color(29, 45, 61));
         createbooking6.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking6.setForeground(new java.awt.Color(239, 234, 234));
         createbooking6.setText("Create Booking");
         createbookingpanel6.add(createbooking6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 100, -1));
+
         feedbackpanel.add(createbookingpanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 160, 40));
+
         listadmin.add(feedbackpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 130, 40));
 
         jPanel4.add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 130, 340));
 
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 490));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 790, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 500, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
 
         pack();
         setLocationRelativeTo(null);

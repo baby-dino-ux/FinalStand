@@ -93,6 +93,7 @@ public class Profile extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel4 = new javax.swing.JPanel();
         listadmin = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         exit = new javax.swing.JLabel();
@@ -115,10 +116,12 @@ public class Profile extends javax.swing.JFrame {
         edityourprofile = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         image = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel4.setBackground(new java.awt.Color(232, 230, 230));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         listadmin.setBackground(new java.awt.Color(29, 45, 61));
         listadmin.setForeground(new java.awt.Color(255, 255, 255));
@@ -243,11 +246,9 @@ public class Profile extends javax.swing.JFrame {
 
         listadmin.add(staffpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 510, 340));
 
-        jPanel4.setBackground(new java.awt.Color(232, 230, 230));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 490));
+        jPanel4.add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 490));
 
-        getContentPane().add(listadmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 490));
+        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 490));
 
         pack();
         setLocationRelativeTo(null);

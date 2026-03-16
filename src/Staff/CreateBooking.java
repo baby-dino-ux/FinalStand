@@ -252,7 +252,6 @@ private String getServiceDescription(String serviceName) {
         border2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(border2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, 600, 10));
 
-        jPanel2.setBackground(new java.awt.Color(29, 45, 61));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jPanel4, org.jdesktop.beansbinding.ELProperty.create("${}"), jPanel2, org.jdesktop.beansbinding.BeanProperty.create("background"));
@@ -562,7 +561,7 @@ private String getServiceDescription(String serviceName) {
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        // servicepanel intentionally NOT added to listadmin — it was blocking availableemployeerpanel
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         lblUsername.setBackground(new java.awt.Color(153, 255, 255));
         lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N

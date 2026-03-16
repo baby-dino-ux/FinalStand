@@ -250,18 +250,23 @@ public class ViewServices extends javax.swing.JFrame {
         TableViewServices.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TableViewServices.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
         TableViewServices.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
             new String [] {
-                "Service ID", "Service Name", "Price", "Description", "Status"
+                "Service ID", "Service Name", "Price", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class,
-                java.lang.Double.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
-            boolean[] canEdit = new boolean[] { false, false, false, false, false };
-            public Class getColumnClass(int columnIndex) { return types[columnIndex]; }
-            public boolean isCellEditable(int row, int col) { return canEdit[col]; }
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
         });
         TableViewServices.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         viewservicesscrollpane.setViewportView(TableViewServices);
@@ -404,7 +409,7 @@ public class ViewServices extends javax.swing.JFrame {
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        // servicepanel intentionally NOT added to listadmin — it was blocking availableemployeerpanel
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         lblUsername.setBackground(new java.awt.Color(153, 255, 255));
         lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N

@@ -310,10 +310,12 @@ public class AvailableEmployee extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class,
-                java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
-            public Class getColumnClass(int columnIndex) { return types [columnIndex]; }
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
         });
         TableAvailableEmployee.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         availablecleanersscrollpane.setViewportView(TableAvailableEmployee);
@@ -338,9 +340,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         dashpanel.setBackground(new java.awt.Color(29, 45, 61));
         dashpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { dashpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt) { dashpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)  { dashpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dashpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                dashpanelMouseExited(evt);
+            }
         });
         dashpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -348,7 +356,9 @@ public class AvailableEmployee extends javax.swing.JFrame {
         dashboard.setForeground(new java.awt.Color(239, 234, 234));
         dashboard.setText("Dashboard");
         dashboard.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) { dashboardMouseEntered(evt); }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dashboardMouseEntered(evt);
+            }
         });
         dashpanel.add(dashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 80, 20));
 
@@ -356,9 +366,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         availableemployeerpanel.setBackground(new java.awt.Color(29, 45, 61));
         availableemployeerpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt)  { availableemployeerpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt)  { availableemployeerpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)   { availableemployeerpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                availableemployeerpanelMouseExited(evt);
+            }
         });
         availableemployeerpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -370,7 +386,9 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel3MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel3MouseClicked(evt);
+            }
         });
         createbookingpanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -386,9 +404,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         viewservicespanel.setBackground(new java.awt.Color(29, 45, 61));
         viewservicespanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt)  { viewservicespanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt)  { viewservicespanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)   { viewservicespanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                viewservicespanelMouseExited(evt);
+            }
         });
         viewservicespanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -402,9 +426,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         createbookingpanel.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt)  { createbookingpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt)  { createbookingpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)   { createbookingpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                createbookingpanelMouseExited(evt);
+            }
         });
         createbookingpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -418,7 +448,7 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         servicepanel.setBackground(new java.awt.Color(29, 45, 61));
         servicepanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        // servicepanel intentionally NOT added to listadmin — it was blocking availableemployeerpanel
+        listadmin.add(servicepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, -1, 40));
 
         lblUsername.setBackground(new java.awt.Color(153, 255, 255));
         lblUsername.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
@@ -433,9 +463,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         mybookingspanel.setBackground(new java.awt.Color(29, 45, 61));
         mybookingspanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt)  { mybookingspanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt)  { mybookingspanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)   { mybookingspanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                mybookingspanelMouseExited(evt);
+            }
         });
         mybookingspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -447,7 +483,9 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel5MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel5MouseClicked(evt);
+            }
         });
         createbookingpanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -463,9 +501,15 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         feedbackpanel.setBackground(new java.awt.Color(29, 45, 61));
         feedbackpanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt)  { feedbackpanelMouseClicked(evt); }
-            public void mouseEntered(java.awt.event.MouseEvent evt)  { feedbackpanelMouseEntered(evt); }
-            public void mouseExited(java.awt.event.MouseEvent evt)   { feedbackpanelMouseExited(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                feedbackpanelMouseExited(evt);
+            }
         });
         feedbackpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -477,7 +521,9 @@ public class AvailableEmployee extends javax.swing.JFrame {
 
         createbookingpanel6.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) { createbookingpanel6MouseClicked(evt); }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createbookingpanel6MouseClicked(evt);
+            }
         });
         createbookingpanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
