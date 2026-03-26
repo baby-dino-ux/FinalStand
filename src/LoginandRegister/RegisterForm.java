@@ -165,6 +165,7 @@ public class RegisterForm extends javax.swing.JFrame {
         return hasLetter && hasDigit;
     }
 
+
     private void firstnamefieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstnamefieldActionPerformed
         // no-op
     }//GEN-LAST:event_firstnamefieldActionPerformed
@@ -257,7 +258,7 @@ public class RegisterForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseClicked
 
     public static void main(String args[]) {
-        try {
+         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -269,6 +270,7 @@ public class RegisterForm extends javax.swing.JFrame {
                 .log(java.util.logging.Level.SEVERE, null, ex);
         }
         java.awt.EventQueue.invokeLater(() -> new RegisterForm().setVisible(true));
+    
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

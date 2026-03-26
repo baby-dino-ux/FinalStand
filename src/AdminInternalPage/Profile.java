@@ -25,7 +25,8 @@ import javax.swing.JOptionPane;
 
 public class Profile extends javax.swing.JFrame {
 
-    
+
+  
     // ── Constructor ───────────────────────────────────────────────────────────
     public Profile() {
         initComponents();
@@ -262,7 +263,7 @@ public class Profile extends javax.swing.JFrame {
     }//GEN-LAST:event_editprofilepanelMouseClicked
 
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        Session session = Session.getInstance();
+          Session session = Session.getInstance();
         String userType = session.getUserType();
         if ("Admin".equalsIgnoreCase(userType)) {
             new AdminDash().setVisible(true);
@@ -279,7 +280,7 @@ public class Profile extends javax.swing.JFrame {
     }//GEN-LAST:event_imageMouseClicked
 
     private void jPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel3MouseClicked
-       imageMouseClicked(evt);
+    imageMouseClicked(evt);
     }//GEN-LAST:event_jPanel3MouseClicked
 
     /**
@@ -321,6 +322,10 @@ public class Profile extends javax.swing.JFrame {
     private javax.swing.JLabel username;
     private javax.swing.JLabel yourid;
     // End of variables declaration//GEN-END:variables
+
+   public void SetVisible(boolean b) {
+        super.setVisible(b);
+    }
 
     }
 

@@ -47,12 +47,25 @@ public class MyBookingForm extends javax.swing.JFrame {
         loadEmployeesCombo();
     }
 
-    public MyBookingForm(MyBookings aThis) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    // ── ADD mode constructor — called from MyBookings ADD button ─────────────
+    public MyBookingForm(MyBookings parent) {
+        initComponents();
+        this.parentTable = parent;
+        this.bookingId   = 0;  // 0 = new booking → will INSERT on save
+        loadServicesCombo();
+        loadEmployeesCombo();
+        // Clear the designer placeholder text from the fields
+        fullnamefield.setText("");
+        addressfield.setText("");
+        contactnumberfield.setText("");
+        emailaddressfield.setText("");
+        bookingdatefield.setText("");
+        tasknotefield.setText("");
     }
 
+    // FIX: was throwing UnsupportedOperationException — delegate to full constructor
     public MyBookingForm(int id, String customer, String service, String employee, String date, MyBookings aThis) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this(id, customer, service, employee, date, "Pending", aThis);
     }
  
     // ── Load extra fields that are not passed via constructor ─────────────────
@@ -101,10 +114,11 @@ public class MyBookingForm extends javax.swing.JFrame {
     // ── Populate employees dropdown (Available OR Busy) ───────────────────────
     private void loadEmployeesCombo() {
         assignemployeelist.removeAllItems();
+        // FIX: query work_status (not status) — status is Active/Inactive, work_status is Available/Busy/Off Duty
         String sql = "SELECT (firstname || ' ' || lastname) AS fullname " +
                      "FROM tbl_users " +
-                     "WHERE type = 'Employee' " +
-                     "AND (status = 'Available' OR status = 'Busy') " +
+                     "WHERE type = 'Employee' AND status = 'Active' " +
+                     "AND (work_status = 'Available' OR work_status = 'Busy') " +
                      "ORDER BY firstname ASC";
         try (Connection conn = config.connectDB();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -149,7 +163,8 @@ public class MyBookingForm extends javax.swing.JFrame {
         contactnumber = new javax.swing.JLabel();
         serviceslist = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // FIX: was EXIT_ON_CLOSE — closing the form was killing the entire application
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(29, 45, 61));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
@@ -377,7 +392,7 @@ public class MyBookingForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bookingdatefieldActionPerformed
 
     private void createpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createpanelMouseClicked
- String customer = fullnamefield.getText().trim();
+        String customer = fullnamefield.getText().trim();
         String addrVal  = addressfield.getText().trim();
         String contact  = contactnumberfield.getText().trim();
         String email    = emailaddressfield.getText().trim();
@@ -387,7 +402,7 @@ public class MyBookingForm extends javax.swing.JFrame {
                           ? serviceslist.getSelectedItem().toString() : "";
         String employee = assignemployeelist.getSelectedItem() != null
                           ? assignemployeelist.getSelectedItem().toString() : "";
- 
+
         // Validation
         if (customer.isEmpty() || addrVal.isEmpty() || contact.isEmpty()
                 || email.isEmpty() || date.isEmpty()
@@ -398,33 +413,55 @@ public class MyBookingForm extends javax.swing.JFrame {
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
- 
+
         // Look up the price for the chosen service
         double price = 0;
-        try (Connection conn = config.connectDB();
-             PreparedStatement ps = conn.prepareStatement(
+        try (java.sql.Connection conn = config.connectDB();
+             java.sql.PreparedStatement ps = conn.prepareStatement(
                  "SELECT s_price FROM tbl_services WHERE s_name = ?")) {
             ps.setString(1, service);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) price = rs.getDouble("s_price");
             }
         } catch (SQLException e) {
             System.out.println("Price lookup error: " + e.getMessage());
         }
- 
-        // Persist the changes
-        conf.updateRecord(
-            "UPDATE tbl_bookings " +
-            "SET b_customer=?, b_address=?, b_contact=?, b_email=?, " +
-            "    b_date=?, b_service=?, b_employee=?, b_tasknote=?, b_price=? " +
-            "WHERE b_id=?",
-            customer, addrVal, contact, email,
-            date, service, employee, taskNote, price,
-            bookingId);
- 
-        JOptionPane.showMessageDialog(this,
-            "Booking updated successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
- 
+
+        // FIX: store username in b_staff (not full name)
+        String staffUsername = Session.getInstance().getUsername();
+
+        if (bookingId == 0) {
+            // ── ADD MODE: INSERT a new booking ────────────────────────────────
+            conf.addRecord(
+                "INSERT INTO tbl_bookings " +
+                "(b_customer, b_address, b_contact, b_email, b_date, " +
+                " b_service, b_employee, b_staff, b_tasknote, b_price, b_status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')",
+                customer, addrVal, contact, email, date,
+                service, employee, staffUsername, taskNote, price);
+
+            // Mark employee Busy
+            conf.updateRecord(
+                "UPDATE tbl_users SET work_status='Busy' WHERE " +
+                "(firstname||' '||lastname)=? AND type='Employee'", employee);
+
+            JOptionPane.showMessageDialog(this,
+                "Booking created successfully!", "Created", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // ── UPDATE MODE: update existing booking ──────────────────────────
+            conf.updateRecord(
+                "UPDATE tbl_bookings " +
+                "SET b_customer=?, b_address=?, b_contact=?, b_email=?, " +
+                "    b_date=?, b_service=?, b_employee=?, b_tasknote=?, b_price=? " +
+                "WHERE b_id=?",
+                customer, addrVal, contact, email,
+                date, service, employee, taskNote, price,
+                bookingId);
+
+            JOptionPane.showMessageDialog(this,
+                "Booking updated successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
+        }
+
         if (parentTable != null) {
             parentTable.loadTable("");
         }

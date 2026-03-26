@@ -3,6 +3,7 @@
 
 package LoginandRegister;
 
+
 import Admin.AdminDash;
 import Employee.EmployeeDash;
 import Staff.StaffDash;
@@ -10,7 +11,6 @@ import config.config;
 import javax.swing.JOptionPane;
 import Session.Session;
 import Session.UserData;
-
 
 public class LoginForm extends javax.swing.JFrame {
 
@@ -107,78 +107,63 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_signupMouseClicked
 
     private void signinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinMouseClicked
-          String userEmail    = email.getText().trim();
-        String userPassword = passwordfield.getText().trim();
- 
-        // ── Empty field check ─────────────────────────────────────────────────
-        if (userEmail.isEmpty() || userPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Please enter both email and password!",
-                "Login Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
- 
-        // ── Fetch user from DB ────────────────────────────────────────────────
-        config conf = new config();
-        UserData userData = conf.getUserData(userEmail, userPassword);
- 
-        if (userData == null) {
-            JOptionPane.showMessageDialog(this,
-                "Invalid email or password!",
-                "Login Failed", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
- 
-        // ── Status check — only Active accounts can log in ────────────────────
-        String status = userData.getStatus();
-        if (!"Active".equalsIgnoreCase(status)) {
-            JOptionPane.showMessageDialog(this,
-                "Your account is inactive.\nPlease contact the administrator to activate your account.",
-                "Account Inactive", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
- 
-        // ── Store session ─────────────────────────────────────────────────────
-        Session session = Session.getInstance();
-        session.login(
-            userData.getId(),
-            userData.getUsername(),
-            userData.getFirstname(),
-            userData.getLastname(),
-            userData.getEmail(),
-            userData.getType()
-        );
- 
-        String type     = userData.getType();
-        String fullName = userData.getFirstname() + " " + userData.getLastname();
- 
-        // ── Route to the correct dashboard ────────────────────────────────────
-        if ("Admin".equalsIgnoreCase(type)) {
-            JOptionPane.showMessageDialog(this,
-                "Welcome, " + userData.getUsername() + "!",
-                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+        String userEmail = email.getText().trim();
+    String userPassword = new String(passwordfield.getPassword()).trim();
+
+    if (userEmail.isEmpty() || userPassword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter both email and password!");
+        return;
+    }
+
+    config conf = new config();
+    UserData userData = conf.getUserData(userEmail, userPassword);
+
+    if (userData == null) {
+        JOptionPane.showMessageDialog(this, "Invalid email or password!");
+        return;
+    }
+
+    if (!"Active".equalsIgnoreCase(userData.getStatus())) {
+        JOptionPane.showMessageDialog(this, "Account not yet approved.");
+        return;
+    }
+
+    // SESSION LOGIN
+    Session.getInstance().login(
+        userData.getId(),
+        userData.getUsername(),
+        userData.getFirstname(),
+        userData.getLastname(),
+        userData.getEmail(),
+        userData.getType()
+    );
+
+    // Welcome message
+    String fullName = userData.getFirstname() + " " + userData.getLastname();
+    JOptionPane.showMessageDialog(this,
+        "Welcome, " + fullName + "!",
+        "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+
+    // Redirect to correct dashboard
+    switch (userData.getType()) {
+        case "Admin":
             new AdminDash(userData.getUsername()).setVisible(true);
-            this.dispose();
- 
-        } else if ("Staff".equalsIgnoreCase(type)) {
-            JOptionPane.showMessageDialog(this,
-                "Welcome, " + fullName + "!",
-                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            break;
+        case "Staff":
             new StaffDash(userData.getUsername()).setVisible(true);
-            this.dispose();
- 
-        } else if ("Employee".equalsIgnoreCase(type)) {
+            break;
+        case "Employee":
+            new EmployeeDash(userData.getUsername()).setVisible(true);
+            break;
+        default:
             JOptionPane.showMessageDialog(this,
-                "Welcome, " + fullName + "!",
-                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-            new EmployeeDash().setVisible(true);
-            this.dispose();
- 
-        } else {
-            JOptionPane.showMessageDialog(this,
-                "Unknown account type: " + type + "\nPlease contact the administrator.",
+                "Unknown account type: " + userData.getType() + "\nPlease contact the administrator.",
                 "Login Error", JOptionPane.ERROR_MESSAGE);
-        }
+            return;
+    }
+
+    this.dispose(); // Close login window once
+
     }//GEN-LAST:event_signinMouseClicked
 
     private void passwordfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordfieldActionPerformed
@@ -205,6 +190,7 @@ public class LoginForm extends javax.swing.JFrame {
                 .log(java.util.logging.Level.SEVERE, null, ex);
         }
         java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
+        
         
     }
 

@@ -52,7 +52,8 @@ public class EmployeeDash extends javax.swing.JFrame {
  
     private void loadSessionInfo() {
         Session session = Session.getInstance();
-        lblUsername.setText(session.isLoggedIn() ? session.getFullName() : "Employee");
+        // FIX: display username (e.g. "john_doe"), not full name
+        lblUsername.setText(session.isLoggedIn() ? session.getUsername() : "Employee");
     }
  
     private void wireStatusBox() {
@@ -92,23 +93,23 @@ public class EmployeeDash extends javax.swing.JFrame {
  
     private void loadDashboard() {
         String myName = Session.getInstance().getFullName();
- 
-        Object total = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_employee = ?", myName);
+        // FIX: LOWER(TRIM()) makes matching robust against extra spaces / case differences
+        Object total = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?))", myName);
         tasksnum.setText(total != null ? total.toString() : "0");
  
-        Object completed = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_employee = ? AND b_status = 'Done'", myName);
+        Object completed = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?)) AND b_status = 'Done'", myName);
         completednum.setText(completed != null ? completed.toString() : "0");
  
-        Object pending = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_employee = ? AND b_status = 'Pending'", myName);
+        Object pending = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?)) AND b_status = 'Pending'", myName);
         pendingnum.setText(pending != null ? pending.toString() : "0");
  
-        Object inprogress = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_employee = ? AND b_status = 'In Progress'", myName);
+        Object inprogress = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?)) AND b_status = 'In Progress'", myName);
         inprogressnum.setText(inprogress != null ? inprogress.toString() : "0");
  
         conf.displayData(
             "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
             "b_date AS 'Date', b_status AS 'Status' " +
-            "FROM tbl_bookings WHERE b_employee = ? ORDER BY b_id DESC LIMIT 6",
+            "FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?)) ORDER BY b_id DESC LIMIT 6",
             TableMyRecentTasks, myName);
  
         loadUpcomingTasks(myName);
@@ -116,7 +117,7 @@ public class EmployeeDash extends javax.swing.JFrame {
  
     private void loadUpcomingTasks(String myName) {
         String sql = "SELECT b_customer, b_service, b_date, b_tasknote " +
-                     "FROM tbl_bookings WHERE b_employee = ? AND b_status = 'Pending' ORDER BY b_date ASC LIMIT 3";
+                     "FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?)) AND b_status = 'Pending' ORDER BY b_date ASC LIMIT 3";
         try (Connection conn = config.connectDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, myName);
@@ -154,7 +155,7 @@ public class EmployeeDash extends javax.swing.JFrame {
  
         String sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
                      "b_date AS 'Date', b_status AS 'Status' " +
-                     "FROM tbl_bookings WHERE b_employee = ?" + statusClause +
+                     "FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?))" + statusClause +
                      " ORDER BY b_id DESC LIMIT 6";
         conf.displayData(sql, TableMyRecentTasks, myName);
     }
@@ -538,6 +539,7 @@ public class EmployeeDash extends javax.swing.JFrame {
 
         upcomingtaskslist3.setBackground(new java.awt.Color(29, 45, 61));
         upcomingtaskslist3.setColumns(20);
+        upcomingtaskslist3.setForeground(new java.awt.Color(255, 255, 255));
         upcomingtaskslist3.setRows(5);
         jScrollPane1.setViewportView(upcomingtaskslist3);
 
@@ -547,6 +549,7 @@ public class EmployeeDash extends javax.swing.JFrame {
 
         upcomingtaskslist2.setBackground(new java.awt.Color(29, 45, 61));
         upcomingtaskslist2.setColumns(20);
+        upcomingtaskslist2.setForeground(new java.awt.Color(255, 255, 255));
         upcomingtaskslist2.setRows(5);
         jScrollPane2.setViewportView(upcomingtaskslist2);
 
@@ -556,6 +559,7 @@ public class EmployeeDash extends javax.swing.JFrame {
 
         upcomingtaskslist1.setBackground(new java.awt.Color(29, 45, 61));
         upcomingtaskslist1.setColumns(20);
+        upcomingtaskslist1.setForeground(new java.awt.Color(255, 255, 255));
         upcomingtaskslist1.setRows(5);
         jScrollPane4.setViewportView(upcomingtaskslist1);
 

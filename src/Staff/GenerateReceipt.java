@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
  */
 public class GenerateReceipt extends javax.swing.JFrame {
 
+
   // ── Parameterized constructor — called from CreateBooking ──────────────────
 public GenerateReceipt(int bookingId, String date, String customerName,
                         String address, String contactNo, String cleaner,
@@ -36,7 +37,7 @@ public GenerateReceipt(int bookingId, String date, String customerName,
     description.setText(serviceDescription != null && !serviceDescription.isEmpty()
         ? serviceDescription : service);
 }
-
+ 
 // ── Backward-compatible 10-arg constructor (no description) ────────────────
 public GenerateReceipt(int bookingId, String date, String customerName,
                         String address, String contactNo, String cleaner,
@@ -71,7 +72,9 @@ public GenerateReceipt() {
         create = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // FIX: changed from EXIT_ON_CLOSE to DISPOSE_ON_CLOSE — closing the receipt
+        // must NOT exit the entire application; it should only close this window.
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         bookingid.setFont(new java.awt.Font("Bahnschrift", 0, 12)); // NOI18N
@@ -177,7 +180,7 @@ private void saveReceiptAsPDF() {
     job.setPageable(new java.awt.print.Book() {{
         // Capture the current frame as a printable page
     }});
-
+ 
     // Simpler approach: use javax.print to print the frame content
     java.awt.print.PrinterJob printerJob = java.awt.print.PrinterJob.getPrinterJob();
     printerJob.setPrintable((graphics, pageFormat, pageIndex) -> {
@@ -192,7 +195,7 @@ private void saveReceiptAsPDF() {
         printAll(graphics);
         return java.awt.print.Printable.PAGE_EXISTS;
     });
-
+ 
     if (printerJob.printDialog()) {
         try {
             printerJob.print();
@@ -205,7 +208,6 @@ private void saveReceiptAsPDF() {
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     }//GEN-LAST:event_createpanelMouseClicked
 
     /**

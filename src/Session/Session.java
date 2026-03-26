@@ -97,8 +97,12 @@ public class Session {
      * Check if current user is a regular User
      * @return true if user is User, false otherwise
      */
-    public boolean isUser() {
-        return "User".equalsIgnoreCase(userType);
+    public boolean isStaff() {
+        return "Staff".equalsIgnoreCase(userType);
+    }
+    
+    public boolean isEmployee() {
+        return "Employee".equalsIgnoreCase(userType);
     }
     
     // Getters

@@ -5,22 +5,90 @@
  */
 package Admin;
 
+import AdminInternalPage.Profile;
+import LoginandRegister.LoginForm;
+import Session.Session;
+import javax.swing.JOptionPane;
+import config.config;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 /**
  *
  * @author ashlaran
  */
 public class AdminDash extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AdminDash
-     */
-    public AdminDash() {
-        initComponents();
+    
+      public AdminDash(String username) {
+    initComponents();
+    lblUsername.setText(username);
+    setupReportComboBox(); // FIX: initialize combobox before loading data
+    loadDashboardData();
+}
+   
+   public AdminDash() {
+    initComponents();
+    setupReportComboBox(); // FIX: initialize combobox before loading data
+    loadDashboardData();
+    Session session = Session.getInstance();
+    lblUsername.setText(session.getUsername());
+}
+ 
+   // FIX: Properly initialize the Report Type ComboBox with filter options
+   private void setupReportComboBox() {
+       reporttypecombobox.removeAllItems();
+       reporttypecombobox.addItem("All");
+       reporttypecombobox.addItem("Pending");
+       reporttypecombobox.addItem("In Progress");
+       reporttypecombobox.addItem("Done");
+       reporttypecombobox.addItem("Cancelled");
+   }
+   
+   private void loadDashboardData() {
+ 
+    config conf = new config();
+ 
+    try (Connection conn = config.connectDB()) {
+ 
+        PreparedStatement ps1 = conn.prepareStatement("SELECT COUNT(*) FROM tbl_users");
+        ResultSet rs1 = ps1.executeQuery();
+        if (rs1.next()) totalusersnum.setText(rs1.getString(1));
+ 
+        PreparedStatement ps2 = conn.prepareStatement("SELECT COUNT(*) FROM tbl_users WHERE type='Employee'");
+        ResultSet rs2 = ps2.executeQuery();
+        if (rs2.next()) totalemployeesnum.setText(rs2.getString(1));
+ 
+        PreparedStatement ps3 = conn.prepareStatement("SELECT COUNT(*) FROM tbl_bookings");
+        ResultSet rs3 = ps3.executeQuery();
+        if (rs3.next()) totalbookingsnum.setText(rs3.getString(1));
+ 
+        PreparedStatement ps4 = conn.prepareStatement("SELECT COUNT(*) FROM tbl_bookings WHERE b_status='Pending'");
+        ResultSet rs4 = ps4.executeQuery();
+        if (rs4.next()) totalpendingnum.setText(rs4.getString(1));
+ 
+        PreparedStatement ps5 = conn.prepareStatement("SELECT COUNT(*) FROM tbl_services");
+        ResultSet rs5 = ps5.executeQuery();
+        if (rs5.next()) totalservicesnum.setText(rs5.getString(1));
+ 
+        conf.displayData(
+            "SELECT b_id AS ID, b_customer AS Customer, b_service AS Service, b_date AS Date, b_status AS Status " +
+            "FROM tbl_bookings ORDER BY b_id DESC LIMIT 20",
+            TableRecentBookings
+        );
+ 
+        conf.displayData(
+            "SELECT firstname || ' ' || lastname AS Name, work_status AS 'Work Status' " +
+            "FROM tbl_users WHERE type='Employee'",
+            TableEmployeeStatus
+        );
+ 
+    } catch (Exception e) {
+        e.printStackTrace();
     }
-
-    public AdminDash(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+ 
+}
+ 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -344,7 +412,7 @@ public class AdminDash extends javax.swing.JFrame {
         reporttypecombobox.setBackground(new java.awt.Color(29, 45, 61));
         reporttypecombobox.setFont(new java.awt.Font("Bahnschrift", 0, 12)); // NOI18N
         reporttypecombobox.setForeground(new java.awt.Color(29, 45, 61));
-        reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        reporttypecombobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Pending", "In Progress", "Done", "Cancelled" }));
         reporttypecombobox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 reporttypecomboboxActionPerformed(evt);
@@ -496,7 +564,13 @@ public class AdminDash extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        // TODO add your handling code here:
+         int c = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to log out?", "Log Out", JOptionPane.YES_NO_OPTION);
+        if (c == JOptionPane.YES_OPTION) {
+            Session.getInstance().logout();
+            new LoginForm().setVisible(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_exitMouseClicked
 
     private void border2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_border2MouseClicked
@@ -508,74 +582,67 @@ public class AdminDash extends javax.swing.JFrame {
     }//GEN-LAST:event_border3MouseClicked
 
     private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
-        // TODO add your handling code here:
+         filterRecentBookings();
     }//GEN-LAST:event_reporttypecomboboxActionPerformed
 
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        // TODO add your handling code here:
+        Profile p = new Profile();
+        p.SetVisible(true);
+        this.dispose();
     }//GEN-LAST:event_settingsMouseClicked
 
     private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        // TODO add your handling code here:
+      AdminDash a = new AdminDash();
+      a.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_dashpanelMouseClicked
 
     private void userpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userpanelMouseClicked
-        // TODO add your handling code here:
+        Users u = new Users();
+      u.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_userpanelMouseClicked
 
     private void employeepanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeepanelMouseClicked
-        // TODO add your handling code here:
+        Employee e = new Employee();
+      e.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_employeepanelMouseClicked
 
     private void servicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_servicespanelMouseClicked
-        // TODO add your handling code here:
+        Services s  = new Services();
+      s.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_servicespanelMouseClicked
 
     private void bookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingspanelMouseClicked
-        // TODO add your handling code here:
+        Bookings b = new Bookings();
+      b.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_bookingspanelMouseClicked
 
     private void reportspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportspanelMouseClicked
-        // TODO add your handling code here:
+        Reports r = new Reports();
+      r.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_reportspanelMouseClicked
 
     private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        // TODO add your handling code here:
+         Feedback f = new Feedback();
+      f.setVisible(true);
+      this.dispose();
     }//GEN-LAST:event_feedbackpanelMouseClicked
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminDash.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        Session session = Session.getInstance();
+        if (!session.isLoggedIn()) {
+            JOptionPane.showMessageDialog(null, "Please login first!", "Unauthorized Access", JOptionPane.WARNING_MESSAGE);
+            java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true)); return;
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AdminDash().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new AdminDash().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -640,4 +707,25 @@ public class AdminDash extends javax.swing.JFrame {
     private javax.swing.JLabel users;
     private javax.swing.JPanel yellow;
     // End of variables declaration//GEN-END:variables
+
+    private void filterRecentBookings() {
+        String selected = (String) reporttypecombobox.getSelectedItem();
+        config conf = new config();
+ 
+        String sql;
+        if (selected == null || selected.equals("All")) {
+            sql = "SELECT b_id AS ID, b_customer AS Customer, b_service AS Service, " +
+                  "b_date AS Date, b_status AS Status " +
+                  "FROM tbl_bookings ORDER BY b_id DESC LIMIT 20";
+        } else {
+            sql = "SELECT b_id AS ID, b_customer AS Customer, b_service AS Service, " +
+                  "b_date AS Date, b_status AS Status " +
+                  "FROM tbl_bookings WHERE b_status='" + selected + "' ORDER BY b_id DESC LIMIT 20";
+        }
+ 
+        conf.displayData(sql, TableRecentBookings);
+    }
+ 
+  
+  
 }

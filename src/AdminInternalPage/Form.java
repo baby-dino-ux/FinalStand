@@ -8,12 +8,15 @@ import config.config;
 import java.util.UUID;
 import javax.swing.JOptionPane;
 import config.PasswordUtil;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 public class Form extends javax.swing.JFrame {
    
     private String mode   = "Add"; // "Add" or "Update"
     private String userId = null;
     private config conf   = new config();
-
+ 
     // ── Default constructor — Add mode ──────────────────────────────────────
     public Form() {
         initComponents();
@@ -22,7 +25,7 @@ public class Form extends javax.swing.JFrame {
         active.setSelected(true);     // default status
         staffbutt1.setSelected(true); // default type
     }
-
+ 
     // ── Constructor with pre-filled data — Update mode ──────────────────────
     public Form(String mode, String id, String firstname, String lastname,
                 String email, String username, String type, String status) {
@@ -30,25 +33,29 @@ public class Form extends javax.swing.JFrame {
         wireButtonGroups();
         setMode(mode);
         this.userId = id;
-
+ 
         if ("Update".equals(mode)) {
             idfield.setText(id != null ? id : "");
             fnamefield.setText(firstname != null ? firstname : "");
             lastnamefield.setText(lastname != null ? lastname : "");
             emailfield1.setText(email != null ? email : "");
+            // FIX: username is now properly passed from DB and displayed here
             usernamefield.setText(username != null ? username : "");
-
+ 
             // Pre-select TYPE radio button from the database value
             if ("Employee".equalsIgnoreCase(type)) {
                 Employeebutt.setSelected(true);
             } else {
                 staffbutt1.setSelected(true); // default Staff
             }
-
+ 
             // Pre-select STATUS radio button
             if ("Active".equalsIgnoreCase(status)) {
                 active.setSelected(true);
+            } else if ("Inactive".equalsIgnoreCase(status)) {
+                Inactive.setSelected(true);
             } else {
+                // Pending or any other status — treat as Inactive visually
                 Inactive.setSelected(true);
             }
         } else {
@@ -56,7 +63,7 @@ public class Form extends javax.swing.JFrame {
             staffbutt1.setSelected(true);
         }
     }
-
+ 
     // ── Set mode label & button text ─────────────────────────────────────────
     public void setMode(String mode) {
         this.mode = mode;
@@ -68,7 +75,7 @@ public class Form extends javax.swing.JFrame {
             st_label.setText("ADD");
         }
     }
-
+ 
     // ── Field validation ─────────────────────────────────────────────────────
     private boolean validateFields() {
         String fn = fnamefield.getText().trim();
@@ -81,7 +88,7 @@ public class Form extends javax.swing.JFrame {
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
+ 
         // Basic e-mail format check
         if (!em.contains("@") || !em.contains(".")) {
             JOptionPane.showMessageDialog(this,
@@ -89,10 +96,42 @@ public class Form extends javax.swing.JFrame {
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
+ 
         return true;
     }
-
+ 
+    // FIX: Check if an email already exists in the database (for Add mode)
+    private boolean isEmailAlreadyExists(String email) {
+        try (Connection conn = config.connectDB()) {
+            PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(*) FROM tbl_users WHERE email = ?");
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+ 
+    // FIX: Check if a username already exists in the database (for Add mode)
+    private boolean isUsernameAlreadyExists(String username) {
+        try (Connection conn = config.connectDB()) {
+            PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(*) FROM tbl_users WHERE username = ?");
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+ 
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -303,16 +342,32 @@ public class Form extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addMouseClicked
-     if (!validateFields()) return;
-
+    if (!validateFields()) return;
+ 
         String fn   = fnamefield.getText().trim();
         String ln   = lastnamefield.getText().trim();
         String em   = emailfield1.getText().trim();
         String un   = usernamefield.getText().trim();
         String tp   = staffbutt1.isSelected() ? "Staff" : "Employee";
         String stat = active.isSelected() ? "Active" : "Inactive";
-
+ 
         if ("Add".equals(mode)) {
+            // FIX: Validate that the email does not already exist before inserting
+            if (isEmailAlreadyExists(em)) {
+                JOptionPane.showMessageDialog(this,
+                    "The email address '" + em + "' is already registered.\nPlease use a different email.",
+                    "Duplicate Email", JOptionPane.WARNING_MESSAGE);
+                return; // Stop — do not proceed with saving
+            }
+ 
+            // FIX: Also validate that the username is not taken
+            if (isUsernameAlreadyExists(un)) {
+                JOptionPane.showMessageDialog(this,
+                    "The username '" + un + "' is already taken.\nPlease choose a different username.",
+                    "Duplicate Username", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+ 
             String generatedPassword = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
             conf.addRecord(
                 "INSERT INTO tbl_users (firstname, lastname, email, username, password, type, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -322,14 +377,15 @@ public class Form extends javax.swing.JFrame {
                 "User added successfully!\nTemporary Password: " + generatedPassword,
                 "Success — Save This Password", JOptionPane.INFORMATION_MESSAGE);
         } else {
+            // UPDATE — email and ID cannot be changed (per spec), but we still save other fields
             conf.updateRecord(
-                "UPDATE tbl_users SET firstname=?, lastname=?, email=?, username=?, type=?, status=? WHERE id=?",
-                fn, ln, em, un, tp, stat, Integer.parseInt(userId)
+                "UPDATE tbl_users SET firstname=?, lastname=?, username=?, type=?, status=? WHERE id=?",
+                fn, ln, un, tp, stat, Integer.parseInt(userId)
             );
             JOptionPane.showMessageDialog(this, "User updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
-
-        dispose(); // Close form
+ 
+        dispose(); // Close form only — does not exit the application
             
     }//GEN-LAST:event_addMouseClicked
 
@@ -358,11 +414,11 @@ public class Form extends javax.swing.JFrame {
     }//GEN-LAST:event_activeActionPerformed
 
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
-        int confirm = JOptionPane.showConfirmDialog(this, "Discard changes and close?", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+         int confirm = JOptionPane.showConfirmDialog(this, "Discard changes and close?", "Confirm Exit", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) dispose();
     }//GEN-LAST:event_exitMouseClicked
 
-    private void wireButtonGroups() {
+   private void wireButtonGroups() {
         buttonGroup1.add(staffbutt1);   // Type: Staff / Employee
         buttonGroup1.add(Employeebutt);
         buttonGroup2.add(active);       // Status: Active / Inactive
@@ -373,7 +429,7 @@ public class Form extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-         Session session = Session.getInstance();
+          Session session = Session.getInstance();
         if (!session.isLoggedIn()) {
             JOptionPane.showMessageDialog(null, "Please login first!", "Unauthorized Access", JOptionPane.WARNING_MESSAGE);
             java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
@@ -410,6 +466,8 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JLabel username;
     public javax.swing.JTextField usernamefield;
     // End of variables declaration//GEN-END:variables
+
+  
 
   
 }

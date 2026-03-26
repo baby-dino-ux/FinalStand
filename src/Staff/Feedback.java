@@ -12,6 +12,9 @@ import javax.swing.JOptionPane;
 
 public class Feedback extends javax.swing.JFrame {
 
+    
+    
+    
     private final config conf = new config();
 
     public Feedback() {
@@ -37,25 +40,25 @@ public class Feedback extends javax.swing.JFrame {
 
     private void loadSessionInfo() {
         Session session = Session.getInstance();
-        lblUsername.setText(session.isLoggedIn() ? session.getFullName() : "Staff");
+        // lblUsername IS initialized in Feedback's initComponents — safe to use
+        lblUsername.setText(session.isLoggedIn() ? session.getUsername() : "Staff");
     }
 
     private void filterFeedback() {
-        String selected  = reporttypecombobox.getSelectedItem() != null
-                           ? reporttypecombobox.getSelectedItem().toString() : "All Completed";
-        String kw        = searchfield.getText().trim();
-        String staffName = Session.getInstance().getFullName();
+        String selected   = reporttypecombobox.getSelectedItem() != null
+                            ? reporttypecombobox.getSelectedItem().toString() : "All Completed";
+        String kw         = searchfield.getText().trim();
+        String staffUser  = Session.getInstance().getUsername();
+        String staffFull  = Session.getInstance().getFullName();
 
-        // "Already Rated" = a tbl_feedback row exists with this booking's id
-        // "Not Yet Rated" = no matching row exists
         String extraClause;
         switch (selected) {
             case "Already Rated":
-                extraClause = " AND b_id IN " +
+                extraClause = " AND b.b_id IN " +
                     "(SELECT f_booking_id FROM tbl_feedback WHERE f_booking_id IS NOT NULL)";
                 break;
             case "Not Yet Rated":
-                extraClause = " AND b_id NOT IN " +
+                extraClause = " AND b.b_id NOT IN " +
                     "(SELECT f_booking_id FROM tbl_feedback WHERE f_booking_id IS NOT NULL)";
                 break;
             default:
@@ -63,37 +66,61 @@ public class Feedback extends javax.swing.JFrame {
                 break;
         }
 
-        String sql = "SELECT b_id AS 'Booking ID', b_customer AS 'Customer', " +
-                     "b_employee AS 'Employee', b_service AS 'Service', " +
-                     "b_date AS 'Date', b_status AS 'Status' " +
-                     "FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Done'" + extraClause;
+        // FIX: match b_staff by BOTH username (new bookings) AND full name (old bookings)
+        // so ALL Done bookings for this staff appear — whether rated or not.
+        String staffClause =
+            "(LOWER(TRIM(b.b_staff)) = LOWER(TRIM(?)) " +
+            " OR LOWER(TRIM(b.b_staff)) = LOWER(TRIM(?)))";
+
+        String sql = "SELECT b.b_id AS 'Booking ID', b.b_customer AS 'Customer', " +
+                     "b.b_employee AS 'Employee', b.b_service AS 'Service', " +
+                     "b.b_date AS 'Date', b.b_status AS 'Status', " +
+                     "COALESCE(f.f_rating, 'Not Rated') AS 'Rating' " +
+                     "FROM tbl_bookings b " +
+                     "LEFT JOIN tbl_feedback f ON f.f_booking_id = b.b_id " +
+                     "WHERE " + staffClause +
+                     " AND b.b_status = 'Done'" + extraClause;
         if (!kw.isEmpty()) {
             String k = kw.replace("'", "''");
-            sql += " AND (b_customer LIKE '%" + k + "%' OR b_employee LIKE '%" + k + "%')";
+            sql += " AND (b.b_customer LIKE '%" + k + "%' OR b.b_employee LIKE '%" + k + "%')";
         }
-        sql += " ORDER BY b_id DESC";
-        conf.displayData(sql, TableMyBooking, staffName);
+        sql += " ORDER BY b.b_id DESC";
+        // Pass staffUser AND staffFull so both old and new bookings match
+        conf.displayData(sql, TableMyBooking, staffUser, staffFull);
     }
 
-    // Keep this for external callers (e.g. RatingForm calls loadTable after saving)
+    // Called by RatingForm after a rating is saved — refreshes table showing ALL Done bookings
     public void loadTable(String keyword) {
         reporttypecombobox.setSelectedIndex(0);
-        String staffName = Session.getInstance().getFullName();
+        String staffUser = Session.getInstance().getUsername();
+        String staffFull = Session.getInstance().getFullName();
+        // Match both username (new) and full name (old) so nothing is missed
+        String staffClause =
+            "(LOWER(TRIM(b.b_staff)) = LOWER(TRIM(?)) " +
+            " OR LOWER(TRIM(b.b_staff)) = LOWER(TRIM(?)))";
         String sql;
         if (keyword == null || keyword.trim().isEmpty()) {
-            sql = "SELECT b_id AS 'Booking ID', b_customer AS 'Customer', " +
-                  "b_employee AS 'Employee', b_service AS 'Service', " +
-                  "b_date AS 'Date', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Done' ORDER BY b_id DESC";
+            sql = "SELECT b.b_id AS 'Booking ID', b.b_customer AS 'Customer', " +
+                  "b.b_employee AS 'Employee', b.b_service AS 'Service', " +
+                  "b.b_date AS 'Date', b.b_status AS 'Status', " +
+                  "COALESCE(f.f_rating, 'Not Rated') AS 'Rating' " +
+                  "FROM tbl_bookings b " +
+                  "LEFT JOIN tbl_feedback f ON f.f_booking_id = b.b_id " +
+                  "WHERE " + staffClause + " AND b.b_status = 'Done' " +
+                  "ORDER BY b.b_id DESC";
         } else {
             String kw = keyword.replace("'", "''");
-            sql = "SELECT b_id AS 'Booking ID', b_customer AS 'Customer', " +
-                  "b_employee AS 'Employee', b_service AS 'Service', " +
-                  "b_date AS 'Date', b_status AS 'Status' " +
-                  "FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Done' AND " +
-                  "(b_customer LIKE '%" + kw + "%' OR b_employee LIKE '%" + kw + "%') ORDER BY b_id DESC";
+            sql = "SELECT b.b_id AS 'Booking ID', b.b_customer AS 'Customer', " +
+                  "b.b_employee AS 'Employee', b.b_service AS 'Service', " +
+                  "b.b_date AS 'Date', b.b_status AS 'Status', " +
+                  "COALESCE(f.f_rating, 'Not Rated') AS 'Rating' " +
+                  "FROM tbl_bookings b " +
+                  "LEFT JOIN tbl_feedback f ON f.f_booking_id = b.b_id " +
+                  "WHERE " + staffClause + " AND b.b_status = 'Done' AND " +
+                  "(b.b_customer LIKE '%" + kw + "%' OR b.b_employee LIKE '%" + kw + "%') " +
+                  "ORDER BY b.b_id DESC";
         }
-        conf.displayData(sql, TableMyBooking, staffName);
+        conf.displayData(sql, TableMyBooking, staffUser, staffFull);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,7 +224,6 @@ public class Feedback extends javax.swing.JFrame {
         jPanel4.add(border2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 650, 10));
 
         searchfield.setFont(new java.awt.Font("Bahnschrift", 0, 11)); // NOI18N
-        searchfield.setText("Search ");
         searchfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchfieldActionPerformed(evt);
@@ -218,9 +244,12 @@ public class Feedback extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        mybookingscrollpane.setForeground(new java.awt.Color(255, 255, 255));
+
         TableMyBooking.setBackground(new java.awt.Color(29, 45, 61));
         TableMyBooking.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TableMyBooking.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        TableMyBooking.setForeground(new java.awt.Color(255, 255, 255));
         TableMyBooking.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
@@ -337,7 +366,7 @@ public class Feedback extends javax.swing.JFrame {
         availableemployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         availableemployee.setForeground(new java.awt.Color(239, 234, 234));
         availableemployee.setText("Av. Employee");
-        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -375,7 +404,7 @@ public class Feedback extends javax.swing.JFrame {
         viewservices.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         viewservices.setForeground(new java.awt.Color(239, 234, 234));
         viewservices.setText("View Services");
-        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(viewservicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 130, 40));
 
@@ -397,7 +426,7 @@ public class Feedback extends javax.swing.JFrame {
         createbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking.setForeground(new java.awt.Color(239, 234, 234));
         createbooking.setText("Create Booking");
-        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 130, 40));
 
@@ -434,7 +463,7 @@ public class Feedback extends javax.swing.JFrame {
         mybookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         mybookings.setForeground(new java.awt.Color(239, 234, 234));
         mybookings.setText("My Bookings");
-        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -548,71 +577,124 @@ public class Feedback extends javax.swing.JFrame {
         int row = TableMyBooking.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Select a completed booking to rate its employee.",
-                "No Selection", JOptionPane.WARNING_MESSAGE); return;
+                "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
         }
         int    bookingId = Integer.parseInt(TableMyBooking.getValueAt(row, 0).toString());
         String employee  = TableMyBooking.getValueAt(row, 2).toString();
+
+        // FIX: Prevent re-rating an already-rated booking.
+        // Column 6 is "Rating" (added by LEFT JOIN). If it's not "Not Rated", block the action.
+        Object ratingCell = TableMyBooking.getValueAt(row, 6);
+        String currentRating = ratingCell != null ? ratingCell.toString() : "Not Rated";
+        if (!"Not Rated".equalsIgnoreCase(currentRating)) {
+            JOptionPane.showMessageDialog(this,
+                "This booking has already been rated: " + currentRating + "\n" +
+                "Each completed booking can only be rated once.",
+                "Already Rated", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         RatingForm rf = new RatingForm(bookingId, employee, this);
+        rf.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         rf.setVisible(true);
     }//GEN-LAST:event_updatepanelMouseClicked
-
-    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        new Profile().setVisible(true); this.dispose();
-    }//GEN-LAST:event_settingsMouseClicked
-    private void dashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardMouseEntered
-    }//GEN-LAST:event_dashboardMouseEntered
-    private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        new StaffDash().setVisible(true); this.dispose();
-    }//GEN-LAST:event_dashpanelMouseClicked
-    private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
-    }//GEN-LAST:event_dashpanelMouseEntered
-    private void dashpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseExited
-    }//GEN-LAST:event_dashpanelMouseExited
-    private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
-    }//GEN-LAST:event_createbookingpanel3MouseClicked
-    private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
-        new AvailableEmployee().setVisible(true); this.dispose();
-    }//GEN-LAST:event_availableemployeerpanelMouseClicked
-    private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
-    }//GEN-LAST:event_availableemployeerpanelMouseEntered
-    private void availableemployeerpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseExited
-    }//GEN-LAST:event_availableemployeerpanelMouseExited
-    private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
-        new ViewServices().setVisible(true); this.dispose();
-    }//GEN-LAST:event_viewservicespanelMouseClicked
-    private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
-    }//GEN-LAST:event_viewservicespanelMouseEntered
-    private void viewservicespanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseExited
-    }//GEN-LAST:event_viewservicespanelMouseExited
-    private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
-        new CreateBooking().setVisible(true); this.dispose();
-    }//GEN-LAST:event_createbookingpanelMouseClicked
-    private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
-    }//GEN-LAST:event_createbookingpanelMouseEntered
-    private void createbookingpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseExited
-    }//GEN-LAST:event_createbookingpanelMouseExited
-    private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
-    }//GEN-LAST:event_createbookingpanel5MouseClicked
-    private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
-        new MyBookings().setVisible(true); this.dispose();
-    }//GEN-LAST:event_mybookingspanelMouseClicked
-    private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
-    }//GEN-LAST:event_mybookingspanelMouseEntered
-    private void mybookingspanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseExited
-    }//GEN-LAST:event_mybookingspanelMouseExited
-    private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
-    }//GEN-LAST:event_createbookingpanel6MouseClicked
-    private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        new Feedback().setVisible(true); this.dispose();
-    }//GEN-LAST:event_feedbackpanelMouseClicked
-    private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
-    }//GEN-LAST:event_feedbackpanelMouseEntered
-    private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
-    }//GEN-LAST:event_feedbackpanelMouseExited
 
     private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
         filterFeedback();
     }//GEN-LAST:event_reporttypecomboboxActionPerformed
+
+    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
+        new Profile().setVisible(true); this.dispose();
+    }//GEN-LAST:event_settingsMouseClicked
+
+    private void dashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardMouseEntered
+
+    }//GEN-LAST:event_dashboardMouseEntered
+
+    private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
+        new StaffDash().setVisible(true); this.dispose();
+    }//GEN-LAST:event_dashpanelMouseClicked
+
+    private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
+
+    }//GEN-LAST:event_dashpanelMouseEntered
+
+    private void dashpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseExited
+
+    }//GEN-LAST:event_dashpanelMouseExited
+
+    private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel3MouseClicked
+
+    private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
+        new AvailableEmployee().setVisible(true); this.dispose();
+    }//GEN-LAST:event_availableemployeerpanelMouseClicked
+
+    private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
+
+    }//GEN-LAST:event_availableemployeerpanelMouseEntered
+
+    private void availableemployeerpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseExited
+
+    }//GEN-LAST:event_availableemployeerpanelMouseExited
+
+    private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
+        new ViewServices().setVisible(true); this.dispose();
+    }//GEN-LAST:event_viewservicespanelMouseClicked
+
+    private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
+
+    }//GEN-LAST:event_viewservicespanelMouseEntered
+
+    private void viewservicespanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseExited
+
+    }//GEN-LAST:event_viewservicespanelMouseExited
+
+    private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
+        new CreateBooking().setVisible(true); this.dispose();
+    }//GEN-LAST:event_createbookingpanelMouseClicked
+
+    private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
+
+    }//GEN-LAST:event_createbookingpanelMouseEntered
+
+    private void createbookingpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseExited
+
+    }//GEN-LAST:event_createbookingpanelMouseExited
+
+    private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel5MouseClicked
+
+    private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
+        new MyBookings().setVisible(true); this.dispose();
+    }//GEN-LAST:event_mybookingspanelMouseClicked
+
+    private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
+
+    }//GEN-LAST:event_mybookingspanelMouseEntered
+
+    private void mybookingspanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseExited
+
+    }//GEN-LAST:event_mybookingspanelMouseExited
+
+    private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel6MouseClicked
+
+    private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
+        new Feedback().setVisible(true); this.dispose();
+    }//GEN-LAST:event_feedbackpanelMouseClicked
+
+    private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
+
+    }//GEN-LAST:event_feedbackpanelMouseEntered
+
+    private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
+
+    }//GEN-LAST:event_feedbackpanelMouseExited
 
     public static void main(String args[]) {
         Session session = Session.getInstance();

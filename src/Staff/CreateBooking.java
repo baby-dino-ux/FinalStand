@@ -37,7 +37,7 @@ public class CreateBooking extends javax.swing.JFrame {
     private void loadSessionInfo() {
         Session session = Session.getInstance();
         if (session.isLoggedIn()) {
-            lblUsername.setText(session.getFullName());
+            lblUsername.setText(session.getUsername());
             loadServicesCombo();
             loadEmployeesCombo();
         } else {
@@ -100,7 +100,7 @@ private double getServicePrice(String serviceName) {
     }
     return 0.0;
 }
-
+ 
 // ── Get description of selected service ────────────────────────────────────
 private String getServiceDescription(String serviceName) {
     String sql = "SELECT s_description FROM tbl_services WHERE s_name = ?";
@@ -126,7 +126,7 @@ private String getServiceDescription(String serviceName) {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
+        // bindingGroup removed — no valid bindings registered
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
@@ -254,8 +254,9 @@ private String getServiceDescription(String serviceName) {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jPanel4, org.jdesktop.beansbinding.ELProperty.create("${}"), jPanel2, org.jdesktop.beansbinding.BeanProperty.create("background"));
-        bindingGroup.addBinding(binding);
+        // FIX: removed broken ELProperty.create("${}") — crashed on open
+        jPanel2.setBackground(new java.awt.Color(28, 69, 91));
+        // FIX: bindingGroup.addBinding(binding) removed — binding was null, caused NPE at line 261
 
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -495,7 +496,7 @@ private String getServiceDescription(String serviceName) {
         availableemployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         availableemployee.setForeground(new java.awt.Color(239, 234, 234));
         availableemployee.setText("Av. Employee");
-        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -533,7 +534,7 @@ private String getServiceDescription(String serviceName) {
         viewservices.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         viewservices.setForeground(new java.awt.Color(239, 234, 234));
         viewservices.setText("View Services");
-        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(viewservicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 130, 40));
 
@@ -555,7 +556,7 @@ private String getServiceDescription(String serviceName) {
         createbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking.setForeground(new java.awt.Color(239, 234, 234));
         createbooking.setText("Create Booking");
-        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 130, 40));
 
@@ -592,7 +593,7 @@ private String getServiceDescription(String serviceName) {
         mybookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         mybookings.setForeground(new java.awt.Color(239, 234, 234));
         mybookings.setText("My Bookings");
-        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -654,7 +655,7 @@ private String getServiceDescription(String serviceName) {
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 490));
 
-        bindingGroup.bind();
+        // bindingGroup.bind() removed
 
         pack();
         setLocationRelativeTo(null);
@@ -680,92 +681,91 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_contactnumberfieldActionPerformed
 
     private void createpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createpanelMouseClicked
-   
-    // ── Collect field values ───────────────────────────────────────────────
-    String fullName    = fullnamefield.getText().trim();
-    String address     = addressfield.getText().trim();
-    String contact     = contactnumberfield.getText().trim();
-    String emailAddr   = emailaddressfield.getText().trim();
-    String bookDate    = bookingdatefield.getText().trim();
-    String taskNote    = tasknotefield.getText().trim();
-    String service     = serviceslist.getSelectedItem() != null
-                         ? serviceslist.getSelectedItem().toString() : "";
-    String employee    = assignemployeelist.getSelectedItem() != null
-                         ? assignemployeelist.getSelectedItem().toString() : "";
-    String staffName   = Session.getInstance().getFullName();
- 
-    // ── Validation ─────────────────────────────────────────────────────────
-    if (fullName.isEmpty() || address.isEmpty() || contact.isEmpty()
-            || emailAddr.isEmpty() || bookDate.isEmpty()
-            || service.isEmpty() || employee.isEmpty()
-            || service.equals("No services available")
-            || employee.equals("No available employees")) {
-        JOptionPane.showMessageDialog(this,
-            "Please fill in all required fields and ensure\n" +
-            "a service and available employee are selected.",
-            "Validation Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
- 
-    // ── Get service price and description ─────────────────────────────────────
-    double price = getServicePrice(service);
-    String serviceDesc = getServiceDescription(service);
- 
-    // ── Insert booking into DB ─────────────────────────────────────────────
-    String sql = "INSERT INTO tbl_bookings " +
-                 "(b_customer, b_address, b_contact, b_email, b_date, " +
-                 " b_service, b_employee, b_staff, b_tasknote, b_price, b_status) " +
-                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
-    try (Connection conn = config.connectDB();
-         PreparedStatement ps = conn.prepareStatement(sql,
-             java.sql.Statement.RETURN_GENERATED_KEYS)) {
-        ps.setString(1, fullName);
-        ps.setString(2, address);
-        ps.setString(3, contact);
-        ps.setString(4, emailAddr);
-        ps.setString(5, bookDate);
-        ps.setString(6, service);
-        ps.setString(7, employee);
-        ps.setString(8, staffName);
-        ps.setString(9, taskNote);
-        ps.setDouble(10, price);
-        ps.executeUpdate();
- 
-        // ── Mark employee as Busy after booking ────────────────────────────
-        try (PreparedStatement upd = conn.prepareStatement(
-                "UPDATE tbl_users SET work_status = 'Busy' WHERE " +
-                "(firstname || ' ' || lastname) = ? AND type = 'Employee'")) {
-            upd.setString(1, employee);
-            upd.executeUpdate();
-        }
- 
-        // ── Get the new booking ID for the receipt ─────────────────────────
-        int newBookingId = 0;
-        try (ResultSet keys = ps.getGeneratedKeys()) {
-            if (keys.next()) newBookingId = keys.getInt(1);
-        }
- 
-        JOptionPane.showMessageDialog(this,
-            "Booking created successfully!\nBooking ID: " + newBookingId,
-            "Success", JOptionPane.INFORMATION_MESSAGE);
+        // ── Collect field values ───────────────────────────────────────────────
+        String fullName  = fullnamefield.getText().trim();
+        String address   = addressfield.getText().trim();
+        String contact   = contactnumberfield.getText().trim();
+        String emailAddr = emailaddressfield.getText().trim();
+        String bookDate  = bookingdatefield.getText().trim();
+        String taskNote  = tasknotefield.getText().trim();
+        String service   = serviceslist.getSelectedItem() != null
+                           ? serviceslist.getSelectedItem().toString() : "";
+        String employee  = assignemployeelist.getSelectedItem() != null
+                           ? assignemployeelist.getSelectedItem().toString() : "";
+        // FIX: store username (not full name) in b_staff for reliable filtering
+        String staffUsername = Session.getInstance().getUsername();
+        String staffFullName = Session.getInstance().getFullName(); // for receipt display only
 
-        // ── Open receipt — when closed, go to StaffDash ────────────────────
-        GenerateReceipt receipt = new GenerateReceipt(
-            newBookingId, bookDate, fullName, address, contact,
-            employee, service, String.valueOf(price), taskNote, staffName, serviceDesc);
-        receipt.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        receipt.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                new MyBookings().setVisible(true);
+        // ── Validation ─────────────────────────────────────────────────────────
+        if (fullName.isEmpty() || address.isEmpty() || contact.isEmpty()
+                || emailAddr.isEmpty() || bookDate.isEmpty()
+                || service.isEmpty() || service.equals("No services available")
+                || employee.isEmpty() || employee.equals("No available employees")) {
+            JOptionPane.showMessageDialog(this,
+                "Please fill in all required fields and ensure\n" +
+                "a service and available employee are selected.",
+                "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // ── Get service price ──────────────────────────────────────────────────
+        double price = getServicePrice(service);
+
+        // ── Insert booking into DB ─────────────────────────────────────────────
+        String sql = "INSERT INTO tbl_bookings " +
+                     "(b_customer, b_address, b_contact, b_email, b_date, " +
+                     " b_service, b_employee, b_staff, b_tasknote, b_price, b_status) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
+        try (Connection conn = config.connectDB();
+             PreparedStatement ps = conn.prepareStatement(sql,
+                 java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, fullName);
+            ps.setString(2, address);
+            ps.setString(3, contact);
+            ps.setString(4, emailAddr);
+            ps.setString(5, bookDate);
+            ps.setString(6, service);
+            ps.setString(7, employee);
+            ps.setString(8, staffUsername); // FIX: username, not full name
+            ps.setString(9, taskNote);
+            ps.setDouble(10, price);
+            ps.executeUpdate();
+
+            // Mark employee Busy
+            try (PreparedStatement upd = conn.prepareStatement(
+                    "UPDATE tbl_users SET work_status = 'Busy' WHERE " +
+                    "(firstname || ' ' || lastname) = ? AND type = 'Employee'")) {
+                upd.setString(1, employee);
+                upd.executeUpdate();
             }
-        });
-        receipt.setVisible(true);
-        this.dispose();
- 
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-            "Error creating booking: " + e.getMessage(),
-            "Database Error", JOptionPane.ERROR_MESSAGE);
+
+            // Get the new booking ID for the receipt
+            int newBookingId = 0;
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) newBookingId = keys.getInt(1);
+            }
+
+            JOptionPane.showMessageDialog(this,
+                "Booking created successfully!\nBooking ID: " + newBookingId,
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Open receipt — when closed, go to MyBookings
+            GenerateReceipt receipt = new GenerateReceipt(
+                newBookingId, bookDate, fullName, address, contact,
+                employee, service, String.valueOf(price), taskNote, staffFullName);
+            receipt.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+            receipt.addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    new MyBookings().setVisible(true);
+                }
+            });
+            receipt.setVisible(true);
+            this.dispose();
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error creating booking: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_createpanelMouseClicked
 
@@ -810,8 +810,7 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_border3MouseClicked
 
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        new Profile().setVisible(true);
-        this.dispose();
+        new Profile().setVisible(true); this.dispose();
     }//GEN-LAST:event_settingsMouseClicked
 
     private void dashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardMouseEntered
@@ -819,8 +818,7 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_dashboardMouseEntered
 
     private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-      new StaffDash().setVisible(true);
-        this.dispose();
+        new StaffDash().setVisible(true); this.dispose();
     }//GEN-LAST:event_dashpanelMouseClicked
 
     private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
@@ -832,12 +830,11 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_dashpanelMouseExited
 
     private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel3MouseClicked
 
     private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
-        new AvailableEmployee().setVisible(true);
-        this.dispose();
+        new AvailableEmployee().setVisible(true); this.dispose();
     }//GEN-LAST:event_availableemployeerpanelMouseClicked
 
     private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
@@ -849,8 +846,7 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_availableemployeerpanelMouseExited
 
     private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
-        new ViewServices().setVisible(true);
-        this.dispose();
+        new ViewServices().setVisible(true); this.dispose();
     }//GEN-LAST:event_viewservicespanelMouseClicked
 
     private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
@@ -862,8 +858,7 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_viewservicespanelMouseExited
 
     private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
-        new CreateBooking().setVisible(true);
-        this.dispose();
+        new CreateBooking().setVisible(true); this.dispose();
     }//GEN-LAST:event_createbookingpanelMouseClicked
 
     private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
@@ -875,12 +870,11 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_createbookingpanelMouseExited
 
     private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel5MouseClicked
 
     private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
-        new MyBookings().setVisible(true);
-        this.dispose();
+        new MyBookings().setVisible(true); this.dispose();
     }//GEN-LAST:event_mybookingspanelMouseClicked
 
     private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
@@ -892,20 +886,19 @@ private String getServiceDescription(String serviceName) {
     }//GEN-LAST:event_mybookingspanelMouseExited
 
     private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel6MouseClicked
 
     private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        new Feedback().setVisible(true);
-        this.dispose();
+        new Feedback().setVisible(true); this.dispose();
     }//GEN-LAST:event_feedbackpanelMouseClicked
 
     private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_feedbackpanelMouseEntered
 
     private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_feedbackpanelMouseExited
 
     /**

@@ -33,7 +33,7 @@ public class ViewServices extends javax.swing.JFrame {
     // ── Show logged-in staff name in sidebar ─────────────────────────────────
     private void loadSessionInfo() {
         Session s = Session.getInstance();
-        lblUsername.setText(s.isLoggedIn() ? s.getFullName() : "Staff");
+        lblUsername.setText(s.isLoggedIn() ? s.getUsername() : "Staff");
     }
  
     // ── Load services table from tbl_services ─────────────────────────────────
@@ -233,7 +233,6 @@ public class ViewServices extends javax.swing.JFrame {
 
         searchfield.setFont(new java.awt.Font("Bahnschrift", 0, 11)); // NOI18N
         searchfield.setForeground(new java.awt.Color(102, 102, 102));
-        searchfield.setText("Search Services");
         searchfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         searchfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -249,6 +248,7 @@ public class ViewServices extends javax.swing.JFrame {
         TableViewServices.setBackground(new java.awt.Color(29, 45, 61));
         TableViewServices.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TableViewServices.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        TableViewServices.setForeground(new java.awt.Color(255, 255, 255));
         TableViewServices.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -257,7 +257,7 @@ public class ViewServices extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Service ID", "Service Name", "Price", "Status"
+                "Service ID", "Service Name", "Price", "Description"
             }
         ) {
             Class[] types = new Class [] {
@@ -343,7 +343,7 @@ public class ViewServices extends javax.swing.JFrame {
         availableemployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         availableemployee.setForeground(new java.awt.Color(239, 234, 234));
         availableemployee.setText("Av. Employee");
-        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -381,7 +381,7 @@ public class ViewServices extends javax.swing.JFrame {
         viewservices.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         viewservices.setForeground(new java.awt.Color(239, 234, 234));
         viewservices.setText("View Services");
-        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(viewservicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 130, 40));
 
@@ -403,7 +403,7 @@ public class ViewServices extends javax.swing.JFrame {
         createbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking.setForeground(new java.awt.Color(239, 234, 234));
         createbooking.setText("Create Booking");
-        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 130, 40));
 
@@ -440,7 +440,7 @@ public class ViewServices extends javax.swing.JFrame {
         mybookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         mybookings.setForeground(new java.awt.Color(239, 234, 234));
         mybookings.setText("My Bookings");
-        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -548,8 +548,7 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_borderMouseClicked
 
     private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        new Profile().setVisible(true);
-        this.dispose();
+        new Profile().setVisible(true); this.dispose();
     }//GEN-LAST:event_settingsMouseClicked
 
     private void dashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardMouseEntered
@@ -557,8 +556,7 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_dashboardMouseEntered
 
     private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        new StaffDash().setVisible(true);
-        this.dispose();
+        new StaffDash().setVisible(true); this.dispose();
     }//GEN-LAST:event_dashpanelMouseClicked
 
     private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
@@ -570,12 +568,11 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_dashpanelMouseExited
 
     private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel3MouseClicked
 
     private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
-        new AvailableEmployee().setVisible(true);
-        this.dispose();
+        new AvailableEmployee().setVisible(true); this.dispose();
     }//GEN-LAST:event_availableemployeerpanelMouseClicked
 
     private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
@@ -587,8 +584,7 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_availableemployeerpanelMouseExited
 
     private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
-        new ViewServices().setVisible(true);
-        this.dispose();
+        new ViewServices().setVisible(true); this.dispose();
     }//GEN-LAST:event_viewservicespanelMouseClicked
 
     private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
@@ -600,8 +596,7 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_viewservicespanelMouseExited
 
     private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
-        new CreateBooking().setVisible(true);
-        this.dispose();
+        new CreateBooking().setVisible(true); this.dispose();
     }//GEN-LAST:event_createbookingpanelMouseClicked
 
     private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
@@ -613,12 +608,11 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_createbookingpanelMouseExited
 
     private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel5MouseClicked
 
     private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
-        new MyBookings().setVisible(true);
-        this.dispose();
+        new MyBookings().setVisible(true); this.dispose();
     }//GEN-LAST:event_mybookingspanelMouseClicked
 
     private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
@@ -630,20 +624,19 @@ public class ViewServices extends javax.swing.JFrame {
     }//GEN-LAST:event_mybookingspanelMouseExited
 
     private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_createbookingpanel6MouseClicked
 
     private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        new Feedback().setVisible(true);
-        this.dispose();
+        new Feedback().setVisible(true); this.dispose();
     }//GEN-LAST:event_feedbackpanelMouseClicked
 
     private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_feedbackpanelMouseEntered
 
     private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_feedbackpanelMouseExited
 
     /**

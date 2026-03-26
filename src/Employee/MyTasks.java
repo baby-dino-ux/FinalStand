@@ -60,7 +60,8 @@ public class MyTasks extends javax.swing.JFrame {
 
     private void loadSessionInfo() {
         Session session = Session.getInstance();
-        lblUsername.setText(session.isLoggedIn() ? session.getFullName() : "Employee");
+        // FIX: display username, not full name
+        lblUsername.setText(session.isLoggedIn() ? session.getUsername() : "Employee");
     }
 
     private void wireStatusBox() {
@@ -106,9 +107,11 @@ public class MyTasks extends javax.swing.JFrame {
             default:                 statusClause = ""; break;
         }
 
+        // FIX: LOWER(TRIM()) makes b_employee matching robust (handles spacing/casing mismatches)
+        //      This ensures ALL assigned bookings including Done status are always visible.
         String sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
                      "b_date AS 'Date', b_tasknote AS 'Task Note', b_status AS 'Status' " +
-                     "FROM tbl_bookings WHERE b_employee = ?" + statusClause;
+                     "FROM tbl_bookings WHERE LOWER(TRIM(b_employee)) = LOWER(TRIM(?))" + statusClause;
         if (!kw.isEmpty() && !kw.equals("Search ")) {
             String k = kw.replace("'", "''");
             sql += " AND (b_customer LIKE '%" + k + "%' OR b_service LIKE '%" + k + "%' " +
@@ -156,11 +159,15 @@ public class MyTasks extends javax.swing.JFrame {
         }
         if ("Done".equals(newStatus)) {
             if (!"In Progress".equalsIgnoreCase(currentBookingStatus) && !"Confirmed".equalsIgnoreCase(currentBookingStatus)) {
-                JOptionPane.showMessageDialog(this, "Booking must be In Progress before marking as Done.", "Not Allowed", JOptionPane.WARNING_MESSAGE); return;
+                JOptionPane.showMessageDialog(this,
+                    "Booking must be In Progress or Confirmed before marking as Done.\nCurrent status: " + currentBookingStatus,
+                    "Not Allowed", JOptionPane.WARNING_MESSAGE); return;
             }
             conf.updateRecord("UPDATE tbl_bookings SET b_status='Done' WHERE b_id=?", id);
             conf.updateRecord("UPDATE tbl_users SET work_status='Available' WHERE (firstname||' '||lastname)=? AND type='Employee'", employeeName);
-            JOptionPane.showMessageDialog(this, "Booking marked as Done!\nYour work status is now Available.", "Done", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                "Booking marked as Done!\nYour work status is now Available.\n\nThe assigned staff can now give a rating in the Feedback section.",
+                "Done", JOptionPane.INFORMATION_MESSAGE);
             wireStatusBox(); filterTasks(); return;
         }
         if ("Cancelled".equals(newStatus)) {
@@ -260,6 +267,11 @@ public class MyTasks extends javax.swing.JFrame {
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         seereceiptpanel.setBackground(new java.awt.Color(29, 45, 61));
+        seereceiptpanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                seereceiptpanelMouseClicked(evt);
+            }
+        });
         seereceiptpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         seereceipt.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
@@ -403,10 +415,7 @@ public class MyTasks extends javax.swing.JFrame {
 
         jPanel4.add(mytasksscrollpane, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 610, 350));
 
-        searchfield.setBackground(new java.awt.Color(29, 45, 61));
         searchfield.setFont(new java.awt.Font("Bahnschrift", 0, 11)); // NOI18N
-        searchfield.setForeground(new java.awt.Color(255, 255, 255));
-        searchfield.setText("Search ");
         searchfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchfieldActionPerformed(evt);
@@ -574,6 +583,11 @@ public class MyTasks extends javax.swing.JFrame {
     private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
         filterTasks();
     }//GEN-LAST:event_reporttypecomboboxActionPerformed
+
+    private void seereceiptpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_seereceiptpanelMouseClicked
+       // FIX: was opening a blank GenerateReceipt() — now correctly calls openReceipt()
+       openReceipt();
+    }//GEN-LAST:event_seereceiptpanelMouseClicked
 
     public static void main(String args[]) {
         Session session = Session.getInstance();

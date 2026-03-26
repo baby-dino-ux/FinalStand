@@ -155,7 +155,7 @@ public class UserForm extends javax.swing.JFrame {
         String ln = lastnamefield.getText().trim();
         String un = usernamefield.getText().trim();
         // FIX 4: use getPassword() since passwordfield is now a JPasswordField
-        String pw = new String(passwordfield.getPassword()).trim();
+        String pw = new String(passwordfield.getText()).trim();
 
         // ── Validation: required fields ───────────────────────────────────────
         if (fn.isEmpty() || ln.isEmpty() || un.isEmpty()) {
@@ -405,7 +405,7 @@ public class UserForm extends javax.swing.JFrame {
         fnamefield.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         fnamefield.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         fnamefield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(239, 234, 234), 2));
-        fnamefield.setEnabled(false);
+        // FIX: removed setEnabled(false) — first name must be editable
         fnamefield.setOpaque(false);
         jPanel1.add(fnamefield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, 210, 30));
 

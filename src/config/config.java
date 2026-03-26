@@ -113,6 +113,57 @@ public class config {
                 System.out.println("Error updating admin status: " + e.getMessage());
             }
 
+            // ── FIX: Retroactively fill f_booking_id for old tbl_feedback rows ──
+            // Old feedback rows have f_booking_id = NULL because they were inserted
+            // before the column existed. Match them to a booking by employee name
+            // and date so the Admin Feedback LEFT JOIN can find the customer name.
+            try (PreparedStatement p = conn.prepareStatement(
+                    "UPDATE tbl_feedback " +
+                    "SET f_booking_id = (" +
+                    "  SELECT b.b_id FROM tbl_bookings b " +
+                    "  WHERE LOWER(TRIM(b.b_employee)) = LOWER(TRIM(tbl_feedback.f_employee)) " +
+                    "  AND LOWER(TRIM(b.b_date))     = LOWER(TRIM(tbl_feedback.f_date)) " +
+                    "  LIMIT 1" +
+                    ") " +
+                    "WHERE f_booking_id IS NULL")) {
+                int fixed = p.executeUpdate();
+                if (fixed > 0) System.out.println("Retroactively linked feedback rows to bookings: " + fixed);
+            } catch (SQLException e) {
+                System.out.println("Feedback migration (non-critical): " + e.getMessage());
+            }
+
+            // ── FIX: Migrate b_staff from full-name to username ──────────────────
+            // CreateBooking previously stored getFullName() (e.g. "John Doe") in b_staff.
+            // If firstname/lastname were empty, it stored " " or "".
+            // Now we store getUsername() instead. This migration converts any existing
+            // full-name b_staff values so all lookups use username consistently.
+            try (PreparedStatement p = conn.prepareStatement(
+                    "UPDATE tbl_bookings " +
+                    "SET b_staff = (" +
+                    "  SELECT u.username FROM tbl_users u " +
+                    "  WHERE LOWER(TRIM(u.firstname||' '||u.lastname)) = LOWER(TRIM(tbl_bookings.b_staff)) " +
+                    "  AND u.type = 'Staff' LIMIT 1" +
+                    ") " +
+                    "WHERE b_staff IS NOT NULL AND TRIM(b_staff) != '' " +
+                    "AND EXISTS (" +
+                    "  SELECT 1 FROM tbl_users u2 " +
+                    "  WHERE LOWER(TRIM(u2.firstname||' '||u2.lastname)) = LOWER(TRIM(tbl_bookings.b_staff)) " +
+                    "  AND u2.type = 'Staff'" +
+                    ")")) {
+                int migrated = p.executeUpdate();
+                if (migrated > 0) System.out.println("Migrated b_staff full-name → username: " + migrated + " rows");
+            } catch (SQLException e) {
+                System.out.println("b_staff migration (non-critical): " + e.getMessage());
+            }
+            try (PreparedStatement pstmt4 = conn.prepareStatement(
+                    "UPDATE tbl_users SET status = 'Active' " +
+                    "WHERE type IN ('Staff', 'Employee') AND (status IS NULL OR status = '')")) {
+                int rows = pstmt4.executeUpdate();
+                if (rows > 0) System.out.println("Existing Staff/Employee accounts activated: " + rows);
+            } catch (SQLException e) {
+                System.out.println("Error activating staff/employee: " + e.getMessage());
+            }
+
             // ── Set default work_status for employees who have none yet ──────
             try (PreparedStatement pstmt3 = conn.prepareStatement(
                     "UPDATE tbl_users SET work_status = 'Available' WHERE type = 'Employee' AND (work_status IS NULL OR work_status = '')")) {

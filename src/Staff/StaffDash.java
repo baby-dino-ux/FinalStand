@@ -48,7 +48,8 @@ public class StaffDash extends javax.swing.JFrame {
     private void loadSessionInfo() {
         Session session = Session.getInstance();
         if (session.isLoggedIn()) {
-            lblUsername.setText(session.getFullName() + "!");
+            // FIX: show username (e.g. "john_staff"), not full name
+            lblUsername.setText(session.getUsername() + "!");
         } else {
             lblUsername.setText("WELCOME!");
         }
@@ -57,41 +58,46 @@ public class StaffDash extends javax.swing.JFrame {
     private void loadDashboard() {
         config conf = new config();
         Session session = Session.getInstance();
-        String staffName = session.getFullName();
- 
-        Object total = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_staff = ?", staffName);
+        String staffName = session.getFullName();    // for receipt display
+        // FIX: b_staff now stores username — filter by username for reliable matching
+        String staffUser = session.getUsername();
+        // Keep NULL fallback ONLY for StaffDash so old pre-migration bookings still show
+        String sf = "(LOWER(TRIM(b_staff)) = LOWER(TRIM(?)) OR b_staff IS NULL OR TRIM(b_staff) = '')";
+
+        Object total = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE " + sf, staffUser);
         totalbookingsnum.setText(total != null ? total.toString() : "0");
- 
-        Object pending = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Pending'", staffName);
+
+        Object pending = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE " + sf + " AND b_status = 'Pending'", staffUser);
         pendingnum.setText(pending != null ? pending.toString() : "0");
- 
-        Object completed = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Done'", staffName);
+
+        Object completed = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE " + sf + " AND b_status = 'Done'", staffUser);
         completednum.setText(completed != null ? completed.toString() : "0");
- 
-        Object cancelled = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Cancelled'", staffName);
+
+        Object cancelled = conf.getValue("SELECT COUNT(*) FROM tbl_bookings WHERE " + sf + " AND b_status = 'Cancelled'", staffUser);
         cancellednum.setText(cancelled != null ? cancelled.toString() : "0");
- 
+
         conf.displayData(
             "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
             "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-            "FROM tbl_bookings WHERE b_staff = ? ORDER BY b_id DESC LIMIT 8",
-            TableRecentBookings, staffName);
- 
+            "FROM tbl_bookings WHERE " + sf + " ORDER BY b_id DESC LIMIT 8",
+            TableRecentBookings, staffUser);
+
         Object weekBookings = conf.getValue(
-            "SELECT COUNT(*) FROM tbl_bookings WHERE b_staff = ? AND b_date >= date('now', '-7 days')", staffName);
+            "SELECT COUNT(*) FROM tbl_bookings WHERE " + sf + " AND b_date >= date('now', '-7 days')", staffUser);
         newbookingsweeknum.setText(weekBookings != null ? weekBookings.toString() : "0");
- 
+
         Object weekRevenue = conf.getValue(
-            "SELECT COALESCE(SUM(b_price), 0) FROM tbl_bookings WHERE b_staff = ? AND b_status = 'Done' AND b_date >= date('now', '-7 days')", staffName);
+            "SELECT COALESCE(SUM(b_price), 0) FROM tbl_bookings WHERE " + sf +
+            " AND b_status = 'Done' AND b_date >= date('now', '-7 days')", staffUser);
         revenueweeknum.setText("₱" + (weekRevenue != null ? weekRevenue.toString() : "0"));
     }
  
-    // ── Filter the recent bookings table by combobox selection ───────────────
     private void filterRecentBookings() {
         String selected  = reporttypecombobox.getSelectedItem() != null
                            ? reporttypecombobox.getSelectedItem().toString() : "All My Bookings";
-        String staffName = Session.getInstance().getFullName();
- 
+        // FIX: use username for b_staff matching
+        String staffUser = Session.getInstance().getUsername();
+
         String statusClause;
         switch (selected) {
             case "Pending Only":     statusClause = " AND b_status = 'Pending'"; break;
@@ -100,12 +106,13 @@ public class StaffDash extends javax.swing.JFrame {
             case "Cancelled Only":   statusClause = " AND b_status = 'Cancelled'"; break;
             default:                 statusClause = ""; break;
         }
- 
+
+        // Keep NULL fallback for StaffDash (pre-migration old data)
         String sql = "SELECT b_id AS 'ID', b_customer AS 'Customer', b_service AS 'Service', " +
                      "b_employee AS 'Employee', b_date AS 'Date', b_status AS 'Status' " +
-                     "FROM tbl_bookings WHERE b_staff = ?" + statusClause +
-                     " ORDER BY b_id DESC LIMIT 8";
-        new config().displayData(sql, TableRecentBookings, staffName);
+                     "FROM tbl_bookings WHERE (LOWER(TRIM(b_staff)) = LOWER(TRIM(?)) OR b_staff IS NULL OR TRIM(b_staff) = '')" +
+                     statusClause + " ORDER BY b_id DESC LIMIT 8";
+        new config().displayData(sql, TableRecentBookings, staffUser);
     }
  
 
@@ -347,6 +354,7 @@ public class StaffDash extends javax.swing.JFrame {
         TableRecentBookings.setBackground(new java.awt.Color(29, 45, 61));
         TableRecentBookings.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TableRecentBookings.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
+        TableRecentBookings.setForeground(new java.awt.Color(255, 255, 255));
         TableRecentBookings.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -440,12 +448,12 @@ public class StaffDash extends javax.swing.JFrame {
         newbookingsweeknum.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         newbookingsweeknum.setForeground(new java.awt.Color(102, 255, 255));
         newbookingsweeknum.setText("0");
-        thisweekpanel.add(newbookingsweeknum, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 50, 30));
+        thisweekpanel.add(newbookingsweeknum, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 40, 30));
 
         revenueweeknum.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         revenueweeknum.setForeground(new java.awt.Color(102, 255, 255));
         revenueweeknum.setText("0");
-        thisweekpanel.add(revenueweeknum, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 40, 30));
+        thisweekpanel.add(revenueweeknum, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, 80, 30));
 
         Thisweek.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         Thisweek.setForeground(new java.awt.Color(255, 255, 255));
@@ -544,7 +552,7 @@ public class StaffDash extends javax.swing.JFrame {
         availableemployee.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         availableemployee.setForeground(new java.awt.Color(239, 234, 234));
         availableemployee.setText("Av. Employee");
-        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        availableemployeerpanel.add(availableemployee, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel3.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -582,7 +590,7 @@ public class StaffDash extends javax.swing.JFrame {
         viewservices.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         viewservices.setForeground(new java.awt.Color(239, 234, 234));
         viewservices.setText("View Services");
-        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        viewservicespanel.add(viewservices, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(viewservicespanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 130, 40));
 
@@ -604,7 +612,7 @@ public class StaffDash extends javax.swing.JFrame {
         createbooking.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         createbooking.setForeground(new java.awt.Color(239, 234, 234));
         createbooking.setText("Create Booking");
-        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 100, -1));
+        createbookingpanel.add(createbooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 100, -1));
 
         listadmin.add(createbookingpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 130, 40));
 
@@ -641,7 +649,7 @@ public class StaffDash extends javax.swing.JFrame {
         mybookings.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         mybookings.setForeground(new java.awt.Color(239, 234, 234));
         mybookings.setText("My Bookings");
-        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 90, -1));
+        mybookingspanel.add(mybookings, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 90, -1));
 
         createbookingpanel5.setBackground(new java.awt.Color(29, 45, 61));
         createbookingpanel5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -747,107 +755,101 @@ public class StaffDash extends javax.swing.JFrame {
     this.dispose();
     }//GEN-LAST:event_viewallborderMouseClicked
 
-    private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_feedbackpanelMouseExited
+    private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
+        filterRecentBookings();
+    }//GEN-LAST:event_reporttypecomboboxActionPerformed
 
-    private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_feedbackpanelMouseEntered
-
-    private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
-        new Feedback().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_feedbackpanelMouseClicked
-
-    private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createbookingpanel6MouseClicked
-
-    private void mybookingspanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseExited
-
-    }//GEN-LAST:event_mybookingspanelMouseExited
-
-    private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
-
-    }//GEN-LAST:event_mybookingspanelMouseEntered
-
-    private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
-        new MyBookings().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_mybookingspanelMouseClicked
-
-    private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createbookingpanel5MouseClicked
-
-    private void createbookingpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseExited
-
-    }//GEN-LAST:event_createbookingpanelMouseExited
-
-    private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
-
-    }//GEN-LAST:event_createbookingpanelMouseEntered
-
-    private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
-        new CreateBooking().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_createbookingpanelMouseClicked
-
-    private void viewservicespanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseExited
-
-    }//GEN-LAST:event_viewservicespanelMouseExited
-
-    private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
-
-    }//GEN-LAST:event_viewservicespanelMouseEntered
-
-    private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
-        new ViewServices().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_viewservicespanelMouseClicked
-
-    private void availableemployeerpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseExited
-
-    }//GEN-LAST:event_availableemployeerpanelMouseExited
-
-    private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
-
-    }//GEN-LAST:event_availableemployeerpanelMouseEntered
-
-    private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
-        new AvailableEmployee().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_availableemployeerpanelMouseClicked
-
-    private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createbookingpanel3MouseClicked
-
-    private void dashpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseExited
-
-    }//GEN-LAST:event_dashpanelMouseExited
-
-    private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
-
-    }//GEN-LAST:event_dashpanelMouseEntered
-
-    private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
-        loadDashboard();
-    }//GEN-LAST:event_dashpanelMouseClicked
+    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
+        new Profile().setVisible(true); this.dispose();
+    }//GEN-LAST:event_settingsMouseClicked
 
     private void dashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardMouseEntered
 
     }//GEN-LAST:event_dashboardMouseEntered
 
-    private void settingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsMouseClicked
-        new Profile().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_settingsMouseClicked
+    private void dashpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseClicked
+        new StaffDash().setVisible(true); this.dispose();
+    }//GEN-LAST:event_dashpanelMouseClicked
 
-    private void reporttypecomboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporttypecomboboxActionPerformed
-        filterRecentBookings();
-    }//GEN-LAST:event_reporttypecomboboxActionPerformed
+    private void dashpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseEntered
+
+    }//GEN-LAST:event_dashpanelMouseEntered
+
+    private void dashpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashpanelMouseExited
+
+    }//GEN-LAST:event_dashpanelMouseExited
+
+    private void createbookingpanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel3MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel3MouseClicked
+
+    private void availableemployeerpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseClicked
+        new AvailableEmployee().setVisible(true); this.dispose();
+    }//GEN-LAST:event_availableemployeerpanelMouseClicked
+
+    private void availableemployeerpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseEntered
+
+    }//GEN-LAST:event_availableemployeerpanelMouseEntered
+
+    private void availableemployeerpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_availableemployeerpanelMouseExited
+
+    }//GEN-LAST:event_availableemployeerpanelMouseExited
+
+    private void viewservicespanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseClicked
+        new ViewServices().setVisible(true); this.dispose();
+    }//GEN-LAST:event_viewservicespanelMouseClicked
+
+    private void viewservicespanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseEntered
+
+    }//GEN-LAST:event_viewservicespanelMouseEntered
+
+    private void viewservicespanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewservicespanelMouseExited
+
+    }//GEN-LAST:event_viewservicespanelMouseExited
+
+    private void createbookingpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseClicked
+        new CreateBooking().setVisible(true); this.dispose();
+    }//GEN-LAST:event_createbookingpanelMouseClicked
+
+    private void createbookingpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseEntered
+
+    }//GEN-LAST:event_createbookingpanelMouseEntered
+
+    private void createbookingpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanelMouseExited
+
+    }//GEN-LAST:event_createbookingpanelMouseExited
+
+    private void createbookingpanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel5MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel5MouseClicked
+
+    private void mybookingspanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseClicked
+        new MyBookings().setVisible(true); this.dispose();
+    }//GEN-LAST:event_mybookingspanelMouseClicked
+
+    private void mybookingspanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseEntered
+
+    }//GEN-LAST:event_mybookingspanelMouseEntered
+
+    private void mybookingspanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mybookingspanelMouseExited
+
+    }//GEN-LAST:event_mybookingspanelMouseExited
+
+    private void createbookingpanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createbookingpanel6MouseClicked
+
+    }//GEN-LAST:event_createbookingpanel6MouseClicked
+
+    private void feedbackpanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseClicked
+        new Feedback().setVisible(true); this.dispose();
+    }//GEN-LAST:event_feedbackpanelMouseClicked
+
+    private void feedbackpanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseEntered
+
+    }//GEN-LAST:event_feedbackpanelMouseEntered
+
+    private void feedbackpanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_feedbackpanelMouseExited
+
+    }//GEN-LAST:event_feedbackpanelMouseExited
 
     /**
      * @param args the command line arguments
